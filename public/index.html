@@ -29,6 +29,11 @@ h1{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(32px,8vw,56px);lin
 .bars{display:flex;gap:4px;margin-top:16px;height:10px}
 .bars i{flex:1;border-radius:4px;transform:scaleY(0);transform-origin:bottom;animation:grow .5s ease forwards}
 @keyframes grow{to{transform:scaleY(1)}}
+.alert{display:block;text-decoration:none;color:inherit;margin:0 0 22px;border-radius:16px;padding:14px 16px;border:1px solid #7a2a2a;background:linear-gradient(135deg,#3a1517,#171a21)}
+.alert b{font-size:16px}.alert .s{display:inline-block;animation:siren 1s ease-in-out infinite}
+@keyframes siren{50%{transform:scale(1.25) rotate(-8deg)}}
+.alert ul{margin:6px 0 0;padding-left:18px;font-size:14px;color:#e8c9c6}
+.alert .go{margin-top:6px;font-size:13px;font-weight:700;color:#ffb4ae}
 footer{max-width:860px;margin:0 auto;padding:16px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);width:100%}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.yr{opacity:1;transform:none}.bars i{transform:none}}
 </style>
@@ -40,6 +45,12 @@ footer{max-width:860px;margin:0 auto;padding:16px;color:var(--muted);font-size:1
   <h1>Do the big year-ahead predictions come true?</h1>
   <p class="sub">Every November, a famous magazine predicts the coming year, and viral posts "decode" its cover. This site scores both against what really happens.</p>
 
+  <!-- ALERT: refresh on each check -->
+  <a class="alert" href="/2027#radar">
+    <b><span class="s">🚨</span> 3 triggers fired · checked 19 Nov 2026</b>
+    <ul><li>India inflation 6.09% (above 6%)</li><li>Monsoon 87% of normal (below 90%)</li><li>IT hiring shrinking</li></ul>
+    <div class="go">See the trigger radar and your plans →</div>
+  </a>
   <div class="years">
     <a class="yr" href="/2026">
       <div class="big">2026</div>

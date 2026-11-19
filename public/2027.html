@@ -149,6 +149,33 @@ h2{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(22px,5vw,30px);mar
 .mc .n{font-size:24px}
 .mc b{display:block;font-size:14px;margin-top:4px}
 .mc span{font-size:12px;color:var(--muted)}
+.alertbar{margin:18px 0 0;border-radius:16px;padding:14px 16px;border:1px solid #7a2a2a;background:linear-gradient(135deg,#3a1517,#171a21)}
+.alertbar.calm{border-color:#1d5a3b;background:linear-gradient(135deg,#123524,#171a21)}
+.alertbar .ah{font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px}
+.alertbar .siren{display:inline-block;animation:siren 1s ease-in-out infinite}
+@keyframes siren{50%{transform:scale(1.25) rotate(-8deg)}}
+.alertbar ul{margin:8px 0 0;padding-left:18px;font-size:14px}
+.alertbar a{color:#ffb4ae;font-weight:700}
+.radar{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.sig{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;position:relative}
+.sig.fired{border-color:#7a2a2a}.sig.near{border-color:#6b4d16}
+.sig .top{display:flex;align-items:center;gap:10px}
+.sig .e{font-size:28px}
+.sig .nm{font-weight:700;font-size:15px}
+.sig .st{margin-left:auto;font-size:11px;font-weight:800;letter-spacing:.06em;padding:3px 8px;border-radius:999px}
+.st.fired{background:#3a1517;color:var(--miss);animation:pulseR 1.6s infinite}
+.st.near{background:#3a2a10;color:var(--partial)}
+.st.watch{background:#16233f;color:var(--pending)}
+.st.ok{background:#123524;color:var(--hit)}
+@keyframes pulseR{0%{box-shadow:0 0 0 0 rgba(229,83,75,.6)}100%{box-shadow:0 0 0 10px rgba(229,83,75,0)}}
+.sig .val{font:800 28px Inter;margin-top:8px}
+.sig .val small{font-size:13px;color:var(--muted);font-weight:600;margin-left:6px}
+.gauge{position:relative;height:12px;background:#0b0d10;border-radius:10px;margin-top:8px;overflow:visible}
+.gauge i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:10px;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.gauge .line{position:absolute;top:-4px;bottom:-4px;width:3px;background:#fff;border-radius:2px;left:calc(100%/1.2)}
+.gauge .lt{position:absolute;top:-20px;font-size:10px;color:var(--muted);transform:translateX(-50%);left:calc(100%/1.2);white-space:nowrap}
+.sig .meta{font-size:12px;color:var(--muted);margin-top:8px}
+.sig .go{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;background:none;border:0;padding:0;font-family:inherit}
 footer{margin-top:60px;border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:12px}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -182,6 +209,12 @@ footer{margin-top:60px;border-top:1px solid var(--line);padding-top:16px;color:v
     <div><i class="dot" style="background:var(--fuzzy)"></i><b style="color:var(--fuzzy)" id="fuzzyN">0</b>too fuzzy to score cleanly</div>
   </div>
 </section>
+
+<div class="alertbar rv" id="alertbar"></div>
+
+<h2 class="rv" id="radar">Trigger radar</h2>
+<p class="sub rv">Live readings against each playbook trigger. <b style="color:var(--miss)">Fired</b> means the line has been crossed. <b style="color:var(--partial)">Near</b> means within 10% of it. <span id="asof"></span></p>
+<div class="radar" id="radarGrid"></div>
 
 <h2 class="rv">2027's calendar: what's already scheduled</h2>
 <p class="sub rv">Fixed dates where forecasts get tested. Blue rings are still to come.</p>
@@ -223,9 +256,8 @@ footer{margin-top:60px;border-top:1px solid var(--line);padding-top:16px;color:v
 <div class="plays" id="plays"></div>
 
 <h3 class="rv" style="margin-top:28px">The 15-minute monthly check</h3>
-<div class="panel rv">
-  <div class="mcheck" id="mcheck"></div>
-  <div class="src">Look at these on the 1st of every month. If one crosses its trigger line, open the matching card above.</div>
+<div class="panel rv"><div class="mcheck" id="mcheck"></div>
+  <div class="src">On the 1st of each month, ask Claude to "check world-ahead". The <a href="#radar">Trigger radar</a> and alert banner then update with fresh numbers.</div>
 </div>
 
 <footer>
@@ -506,6 +538,58 @@ const store = {
 
   document.getElementById("mcheck").innerHTML = MONTHLY.map(m =>
     `<div class="mc"><div class="n">${m.n}</div><b>${esc(m.b)}</b><span>${esc(m.s)}</span></div>`).join("");
+})();
+
+/* ---------- trigger radar (update SIGNALS on each check) ---------- */
+const CHECKED = "19 Nov 2026";
+const SIGNALS = [
+ {e:"🇮🇳",n:"India CPI inflation",v:6.09,u:"%",trig:6,dir:"above",asof:"Oct 2026",play:"oil",note:"Food inflation 8.94%",src:"https://www.mospi.gov.in/uploads/latestreleasesfiles/1794480048335-Press%20Release%20of%20CPI%20for%20October%202026%20.pdf"},
+ {e:"🌧️",n:"Monsoon rainfall",v:87,u:"% of normal",trig:90,dir:"below",asof:"Jun–Sep 2026",play:"heat",note:"Deficient season; next forecast April 2027",src:"https://mausam.imd.gov.in/Forecast/marquee_data/Salient_Features_SW_MONSOON%20_2026_30_sep.pdf"},
+ {e:"💼",n:"IT hiring",v:null,label:"Shrinking",trig:null,status:"fired",asof:"FY26 to Nov 2026",play:"ai",note:"Top-5 IT headcount fell in FY26; Oracle India cuts in Sep",src:"https://www.weekday.works/post/india-layoffs-tracker-2026"},
+ {e:"📉",n:"US 10-year yield",v:5.15,u:"%",trig:6,dir:"above",asof:"16 Nov 2026",play:"bond",note:"Near one-month high; Fed hike bets rising",src:"https://tradingeconomics.com/united-states/government-bond-yield/news/601580"},
+ {e:"🛢️",n:"Brent oil",v:94,u:"$/bbl",trig:110,dir:"above",asof:"16 Nov 2026",play:"oil",note:"Down from $107+ in early Nov as Gulf exports recover",src:"https://tradingeconomics.com/commodity/brent-crude-oil/news/601607"},
+ {e:"🤖",n:"Nasdaq fall from peak",v:11.6,u:"% down",trig:20,dir:"above",asof:"5 Nov 2026",play:"ai",note:"Third correction of 2026",src:"https://stablecoininsider.org/nasdaq-correction-tracker/"}
+];
+function sigStatus(s){
+  if (s.status) return s.status;
+  const r = s.dir === "below" ? s.trig / s.v : s.v / s.trig;
+  return r >= 1 ? "fired" : r >= 0.9 ? "near" : r >= 0.75 ? "watch" : "ok";
+}
+function sigRatio(s){ if (s.v == null) return 1.05; return s.dir === "below" ? s.trig / s.v : s.v / s.trig; }
+const STLAB = {fired:"FIRED",near:"NEAR",watch:"WATCH",ok:"OK"};
+const STCOL = {fired:"var(--miss)",near:"var(--partial)",watch:"var(--pending)",ok:"var(--hit)"};
+function openPlay(id){
+  const c = document.querySelector(`.play[data-id="${id}"]`); if (!c) return;
+  if (!c.classList.contains("open")) c.querySelector(".toggle").click();
+  c.scrollIntoView({behavior: reduce ? "auto" : "smooth", block:"start"});
+}
+(function(){
+  document.getElementById("asof").textContent = "Last checked: " + CHECKED + ".";
+  const order = {fired:0,near:1,watch:2,ok:3};
+  const list = SIGNALS.map(s => ({...s, st: sigStatus(s)})).sort((a,b) => order[a.st] - order[b.st]);
+  const grid = document.getElementById("radarGrid");
+  grid.innerHTML = list.map(s => {
+    const pct = Math.min(sigRatio(s) / 1.2, 1) * 100;
+    const shown = s.v == null ? s.label : `${s.v}<small>${esc(s.u)}</small>`;
+    const tl = s.trig == null ? "trigger: freezes/layoffs" : `trigger ${s.dir==="below"?"<":">"} ${s.trig}`;
+    return `<div class="sig ${s.st}">
+      <div class="top"><span class="e">${s.e}</span><span class="nm">${esc(s.n)}</span><span class="st ${s.st}">${STLAB[s.st]}</span></div>
+      <div class="val">${shown}</div>
+      <div class="gauge"><i data-w="${pct}" style="background:${STCOL[s.st]}"></i><span class="line"></span><span class="lt">${tl}</span></div>
+      <div class="meta">${esc(s.note)} · as of ${esc(s.asof)} · <a href="${s.src}">source</a></div>
+      <button class="go" data-play="${s.play}">Open the plan →</button>
+    </div>`; }).join("");
+  grid.querySelectorAll(".go").forEach(b => b.onclick = () => openPlay(b.dataset.play));
+  const fill = () => grid.querySelectorAll(".gauge i").forEach(i => i.style.width = i.dataset.w + "%");
+  if (reduce) fill(); else { const o = new IntersectionObserver(es => { if (es[0].isIntersecting){ fill(); o.disconnect(); } }, {threshold:.2}); o.observe(grid); }
+
+  const hot = list.filter(s => s.st === "fired" || s.st === "near");
+  const bar = document.getElementById("alertbar");
+  if (!hot.length){ bar.classList.add("calm"); bar.innerHTML = `<div class="ah">✅ No triggers near. Keep doing the prep steps.</div>`; return; }
+  const f = hot.filter(s => s.st==="fired").length, n = hot.length - f;
+  bar.innerHTML = `<div class="ah"><span class="siren">🚨</span>${f} trigger${f!==1?"s":""} fired${n?` · ${n} near`:""}</div>
+    <ul>${hot.map(s => `<li><b>${esc(s.n)}</b>: ${s.v==null?esc(s.label):s.v+esc(s.u)} (${esc(s.note)}). <a href="#" data-play="${s.play}">Open plan →</a></li>`).join("")}</ul>`;
+  bar.querySelectorAll("a[data-play]").forEach(a => a.onclick = e => { e.preventDefault(); openPlay(a.dataset.play); });
 })();
 
 document.querySelectorAll(".rv").forEach(watch);
