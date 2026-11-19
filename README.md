@@ -22,6 +22,14 @@ wrangler.toml  Cloudflare Worker (static assets), name: world-ahead
 
 Each page is self-contained HTML/CSS/JS. The data lives in the `TRENDS`, `EVENTS` and `MONTHS` arrays inside each page's `<script>`. To update a verdict, edit the array and push.
 
+## When something happens
+
+1. Open `public/2027.html` and find the forecast in the `TRENDS` array.
+2. Update `now` with what happened and a date. When it's settled, add `verdict: "hit" | "partial" | "miss"` and a source link.
+3. Commit to `main`. GitHub Actions redeploys in about 30 seconds.
+
+The action playbook (what to do when a trigger fires) is in the `BASE`, `PLAYS` and `MONTHLY` arrays in the same file.
+
 ## Deploy
 
 Pushes to `main` deploy automatically through GitHub Actions.

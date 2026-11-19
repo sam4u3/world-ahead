@@ -94,6 +94,33 @@ h2{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(22px,5vw,30px);mar
 .rule .e{font-size:34px}
 .rule b{display:block;margin:6px 0 4px}
 .rule p{margin:0;color:var(--muted);font-size:14px}
+.base .baseh{font-weight:800;font-size:17px;margin-bottom:10px}
+.checks{display:grid;gap:8px}
+.ck{display:flex;gap:10px;align-items:flex-start;font-size:15px;opacity:0;transform:translateX(-14px);transition:all .5s ease}
+.base.in .ck{opacity:1;transform:none}
+.ck .bx{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid var(--hit);display:grid;place-items:center;font-size:14px;color:var(--hit)}
+.ck .bx::after{content:"✓";transform:scale(0);transition:transform .35s cubic-bezier(.2,1.6,.4,1)}
+.base.in .ck .bx::after{transform:scale(1)}
+.plays{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-top:16px}
+.play{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;text-align:left;font:inherit;color:inherit;position:relative;overflow:hidden}
+.play .row1{display:flex;gap:12px;align-items:center}
+.play .e{font-size:34px;line-height:1}
+.play h4{margin:0;font-size:16px}
+.play .trig{margin-top:10px;font-size:13px;background:#0b0d10;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.play .trig b{color:var(--partial)}
+.play .lvl{position:absolute;top:12px;right:12px;font-size:11px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:999px}
+.lvl.high{background:#3a1517;color:var(--miss)}.lvl.med{background:#3a2a10;color:var(--partial)}.lvl.low{background:#123524;color:var(--hit)}
+.play .moves{max-height:0;overflow:hidden;transition:max-height .5s ease}
+.play.open .moves{max-height:520px}
+.play ol{margin:12px 0 0;padding-left:20px;font-size:14px}
+.play ol li{margin-bottom:6px}
+.play .hint{margin-top:10px;font-size:12px;color:var(--accent);font-weight:700}
+.play .avoid{margin-top:8px;font-size:13px;color:var(--miss)}
+.mcheck{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.mc{background:#0b0d10;border:1px solid var(--line);border-radius:12px;padding:10px}
+.mc .n{font-size:24px}
+.mc b{display:block;font-size:14px;margin-top:4px}
+.mc span{font-size:12px;color:var(--muted)}
 footer{margin-top:60px;border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:12px}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -104,7 +131,7 @@ footer{margin-top:60px;border-top:1px solid var(--line);padding-top:16px;color:v
 </style>
 </head>
 <body>
-<nav><div class="in"><a class="brand" href="/">🔭 World Ahead Check</a><a href="/2026">2026</a><a class="cur" href="/2027">2027</a></div></nav>
+<nav><div class="in"><a class="brand" href="/">🔭 World Ahead Check</a><a href="/2026">2026</a><a class="cur" href="/2027">2027</a><a href="/2027#playbook">Playbook</a></div></nav>
 <div class="wrap">
 
 <header class="rv">
@@ -154,6 +181,23 @@ footer{margin-top:60px;border-top:1px solid var(--line);padding-top:16px;color:v
   <div class="rule"><div class="e">📅</div><b>Right month, right thing</b><p>"Conflict in May" scores only if a new, specific conflict starts or escalates in May.</p></div>
   <div class="rule"><div class="e">🧮</div><b>Compare with a dartboard</b><p>We'll check whether the wheel beats random month labels. If it doesn't, it carries no information.</p></div>
   <div class="rule"><div class="e">🔁</div><b>Logged monthly</b><p>Each month gets a verdict on this page, misses included.</p></div>
+</div>
+
+<h2 class="rv" id="playbook">Action playbook: if this happens, do this</h2>
+<p class="sub rv">Decide now, act calmly later. Each card shows a trigger you can measure and the moves to make. Tap a card to see the moves. This is general information, not financial advice.</p>
+
+<div class="panel rv base" id="base">
+  <div class="baseh">🛟 Do these now, whatever happens</div>
+  <div class="checks" id="checks"></div>
+  <div class="src" style="margin-top:12px">These protect you against every scenario below, so none of them waits for a trigger.</div>
+</div>
+
+<div class="plays" id="plays"></div>
+
+<h3 class="rv" style="margin-top:28px">The 15-minute monthly check</h3>
+<div class="panel rv">
+  <div class="mcheck" id="mcheck"></div>
+  <div class="src">Look at these on the 1st of every month. If one crosses its trigger line, open the matching card above.</div>
 </div>
 
 <footer>
@@ -280,6 +324,73 @@ const watch = el => reduce ? (el.classList.add("in"), setTimeout(()=>el.dispatch
       <div class="verdict">⚠️ Can't fail, so it can't predict. No place, no actor, no date.</div>
     </div>`).join("");
   box.querySelectorAll(".mg").forEach(watch);
+})();
+
+/* ---------- action playbook ---------- */
+const BASE = [
+ "Emergency fund covering 6–12 months of expenses, in a savings account or liquid fund",
+ "Health insurance for you and your family, plus term life cover if anyone depends on you",
+ "No new floating-rate loans; prefer fixed rates while rates are high",
+ "Keep investing on a fixed schedule (SIP) and never sell in a panic",
+ "Keep your CV current and build one in-demand skill: AI, security or cloud",
+ "Turn on 2FA, a password manager, and bank/UPI transaction alerts"
+];
+const PLAYS = [
+ {e:"🛢️",t:"Oil & food prices spike",lvl:"high",trig:"Brent stays above <b>$110</b> for a month, or Indian fuel/food inflation jumps",
+  moves:["Raise your monthly budget for fuel and groceries by about 15%","Delay big optional purchases (car, gadgets) by 3–6 months","Lock fixed rates on any loan you can't avoid","Check your emergency fund still covers 6 months at the higher prices"],
+  avoid:"Don't hoard or buy fuel and food in bulk at peak prices."},
+ {e:"📉",t:"Bond market 'snaps'",lvl:"high",trig:"US 10-year above <b>6%</b>, or a major default or bailout makes headlines",
+  moves:["Expect stock markets to fall, so keep your SIP running and don't stop it","Don't take new loans until rates settle","Move money you need within 12 months out of stocks","Rebalance once, on a fixed date, not daily"],
+  avoid:"Don't sell everything after a 10% fall. Panic-selling locks in the loss."},
+ {e:"🤖",t:"AI crash hits IT hiring",lvl:"high",trig:"Nasdaq falls <b>20%</b> from its peak, or big IT firms announce hiring freezes or layoffs",
+  moves:["Grow your emergency fund toward 12 months","Update your CV and LinkedIn, and contact 5 people in your network","Become visibly useful in your current role: own a critical system","Finish one certification in AI, security or cloud"],
+  avoid:"Don't quit a stable job without an offer in hand during a freeze."},
+ {e:"🛡️",t:"Wave of AI cyber-attacks",lvl:"med",trig:"A major bank, telecom or government breach is reported, or deepfake scams surge",
+  moves:["Change passwords on email and banking; use the password manager","Lower UPI and card limits, and freeze cards you don't use","Agree a 'safe word' with family for urgent money calls","Never act on calls or messages asking for OTPs, even if the voice sounds familiar"],
+  avoid:"Don't click links in 'urgent' bank or KYC messages."},
+ {e:"🌏",t:"Taiwan blockade",lvl:"med",trig:"China declares a blockade or quarantine of Taiwan",
+  moves:["Buy any laptop or phone you genuinely need soon, before chip shortages raise prices","Expect a market drop: follow the 'bond snap' card","Watch for supply-chain and semiconductor job openings, since demand shifts"],
+  avoid:"Don't stockpile electronics you don't need."},
+ {e:"🌡️",t:"Extreme heat / weak monsoon",lvl:"med",trig:"IMD declares a monsoon below <b>90%</b> of normal, or heatwave alerts in your city",
+  moves:["Budget for higher vegetable, grain and power bills","Check your cooling and power backup before summer","Review heat-related cover in your health insurance","Plan travel to avoid peak heat months"],
+  avoid:"Don't ignore heat health risks: hydrate, and avoid midday outdoor work."},
+ {e:"🇺🇸",t:"US tariffs or visa curbs on IT",lvl:"med",trig:"New US limits on outsourcing, H-1B visas, or tariffs hitting Indian services",
+  moves:["Diversify your skills toward clients in Europe, the Middle East and India","Ask your employer which accounts are exposed","Keep the job-switch plan ready, but move only with an offer"],
+  avoid:"Don't assume your current US client is safe."},
+ {e:"🇫🇷",t:"Le Pen wins France",lvl:"low",trig:"National Rally wins the presidential run-off",
+  moves:["Expect some euro and market wobbles, with little direct effect in India","If you work on EU client projects, ask about budget plans"],
+  avoid:"Don't make investment moves based on the headline alone."}
+];
+const MONTHLY = [
+ {n:"🛢️",b:"Brent oil",s:"trigger: above $110"},
+ {n:"📉",b:"US 10-year yield",s:"trigger: above 6%"},
+ {n:"🤖",b:"Nasdaq vs its peak",s:"trigger: down 20%"},
+ {n:"🇮🇳",b:"India CPI inflation",s:"trigger: above 6%"},
+ {n:"🌧️",b:"Monsoon (Jun–Sep)",s:"trigger: below 90%"},
+ {n:"💼",b:"IT hiring news",s:"trigger: freezes or layoffs"}
+];
+(function(){
+  const base = document.getElementById("base");
+  document.getElementById("checks").innerHTML = BASE.map((b,i) =>
+    `<div class="ck" style="transition-delay:${i*120}ms"><span class="bx" style="transition-delay:${i*120}ms"></span><span>${esc(b)}</span></div>`).join("");
+  base.querySelectorAll(".ck .bx").forEach((x,i)=> x.style.setProperty("--d", i));
+  watch(base);
+  const box = document.getElementById("plays");
+  box.innerHTML = PLAYS.map(p => `
+    <button class="play rv" aria-expanded="false">
+      <span class="lvl ${p.lvl}">${p.lvl==="high"?"HIGH IMPACT":p.lvl==="med"?"MEDIUM":"LOW"}</span>
+      <div class="row1"><span class="e">${p.e}</span><h4>${esc(p.t)}</h4></div>
+      <div class="trig">🚨 Trigger: ${p.trig}</div>
+      <div class="moves"><ol>${p.moves.map(m=>`<li>${esc(m)}</li>`).join("")}</ol><div class="avoid">✋ ${esc(p.avoid)}</div></div>
+      <div class="hint">Tap for your moves ↓</div>
+    </button>`).join("");
+  box.querySelectorAll(".play").forEach(b => {
+    b.onclick = () => { const o = b.classList.toggle("open"); b.setAttribute("aria-expanded", o);
+      b.querySelector(".hint").textContent = o ? "Tap to close ↑" : "Tap for your moves ↓"; };
+    watch(b);
+  });
+  document.getElementById("mcheck").innerHTML = MONTHLY.map(m =>
+    `<div class="mc"><div class="n">${m.n}</div><b>${esc(m.b)}</b><span>${esc(m.s)}</span></div>`).join("");
 })();
 
 document.querySelectorAll(".rv").forEach(watch);
