@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>World Ahead Check — do year-ahead predictions come true?</title>
+<meta name="description" content="Independent, animated scorecards checking famous year-ahead forecasts and viral cover-decoding theories against what actually happened.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Source+Serif+4:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262b35;--text:#e8eaf0;--muted:#9aa3b2;--hit:#2fb67c;--partial:#e0a43a;--miss:#e5534b;--pending:#4f8cff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 Inter,system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.wrap{max-width:860px;margin:0 auto;padding:48px 16px 40px;flex:1}
+.kicker{text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--muted);font-weight:600}
+h1{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(32px,8vw,56px);line-height:1.05;margin:8px 0 12px}
+.sub{color:var(--muted);font-size:18px;max-width:620px;margin:0 0 36px}
+.scope{font-size:46px;display:inline-block;animation:sweep 4s ease-in-out infinite;transform-origin:70% 70%}
+@keyframes sweep{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}
+.years{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.yr{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;position:relative;overflow:hidden;transition:transform .25s ease,border-color .25s ease;opacity:0;transform:translateY(20px);animation:up .7s ease forwards}
+.yr:nth-child(2){animation-delay:.15s}
+@keyframes up{to{opacity:1;transform:none}}
+.yr:hover{transform:translateY(-4px);border-color:#3b4458}
+.yr .big{font:800 64px Inter;line-height:1;letter-spacing:-.03em}
+.yr .st{display:inline-block;margin-top:10px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px}
+.yr p{color:var(--muted);margin:12px 0 0}
+.yr .go{margin-top:16px;font-weight:700}
+.bars{display:flex;gap:4px;margin-top:16px;height:10px}
+.bars i{flex:1;border-radius:4px;transform:scaleY(0);transform-origin:bottom;animation:grow .5s ease forwards}
+@keyframes grow{to{transform:scaleY(1)}}
+footer{max-width:860px;margin:0 auto;padding:16px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);width:100%}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.yr{opacity:1;transform:none}.bars i{transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="scope">🔭</span>
+  <div class="kicker">World Ahead Check</div>
+  <h1>Do the big year-ahead predictions come true?</h1>
+  <p class="sub">Every November, a famous magazine predicts the coming year, and viral posts "decode" its cover. This site scores both against what really happens.</p>
+
+  <div class="years">
+    <a class="yr" href="/2026">
+      <div class="big">2026</div>
+      <span class="st" style="background:#123524;color:var(--hit)">Scored</span>
+      <div class="bars" id="b2026"></div>
+      <p>4 of 10 forecasts fully right. The year's biggest shock, the Iran war, was missed. The cover theory's "pestilence" and "collapse" never came.</p>
+      <div class="go">See the scorecard →</div>
+    </a>
+    <a class="yr" href="/2027">
+      <div class="big">2027</div>
+      <span class="st" style="background:#16233f;color:var(--pending)">Tracking live</span>
+      <div class="bars" id="b2027"></div>
+      <p>10 forecasts logged with today's baseline and the exact event that will settle each, plus the viral "month wheel" theory.</p>
+      <div class="go">Open the tracker →</div>
+    </a>
+  </div>
+</div>
+<footer>Independent fan analysis. Not affiliated with or endorsed by The Economist. No cover artwork is reproduced. Not financial advice.</footer>
+<script>
+const C = {h:"#2fb67c",p:"#e0a43a",m:"#e5534b",u:"#6b7280",o:"#4f8cff"};
+const fill = (id, seq) => document.getElementById(id).innerHTML =
+  seq.split("").map((k,i) => `<i style="background:${C[k]};animation-delay:${.4+i*.08}s"></i>`).join("");
+fill("b2026","hhhhpppmuu");
+fill("b2027","oooooooooo");
+</script>
+</body>
+</html>

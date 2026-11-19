@@ -1,0 +1,9 @@
+name = "world-ahead"
+compatibility_date = "2026-11-01"
+
+# Static site: everything in ./public is served as-is.
+# /2026 resolves to 2026.html and /2027 to 2027.html automatically.
+[assets]
+directory = "./public"
+html_handling = "auto-trailing-slash"
+not_found_handling = "404-page"

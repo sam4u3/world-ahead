@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forecast Check 2027 — live tracker</title>
+<meta name="description" content="An animated tracker for 2027's year-ahead forecasts and the viral 'month wheel' cover theory: what was predicted, where things stand, and what will settle each one.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Source+Serif+4:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262b35;--text:#e8eaf0;--muted:#9aa3b2;
+--hit:#2fb67c;--partial:#e0a43a;--miss:#e5534b;--pending:#4f8cff;--fuzzy:#a78bfa;--accent:#4f8cff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}
+nav{position:sticky;top:0;z-index:5;background:rgba(15,17,21,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .in{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;font-weight:600;font-size:14px}
+nav a{color:var(--muted);text-decoration:none}
+nav a.cur{color:var(--text)}
+nav .brand{color:var(--text);margin-right:auto}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px}
+h1{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(28px,7vw,46px);line-height:1.1;margin:6px 0 10px}
+h2{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(22px,5vw,30px);margin:64px 0 6px}
+.kicker{text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--muted);font-weight:600}
+.sub{color:var(--muted);margin:0 0 18px}
+.src{font-size:12px;color:var(--muted);margin-top:10px}
+.src a{margin-right:8px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+.dot{width:14px;height:14px;border-radius:50%;flex:none;display:inline-block}
+.hero{display:grid;grid-template-columns:220px 1fr;gap:22px;align-items:center}
+@media(max-width:620px){.hero{grid-template-columns:1fr;justify-items:center;text-align:center}}
+.ring{width:220px;height:220px}
+.ring .prog{fill:none;stroke:var(--pending);stroke-width:22;stroke-linecap:round;transition:stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1)}
+.ring .big{font:800 40px Inter;fill:var(--text)}
+.ring .small{font:600 13px Inter;fill:var(--muted)}
+.stats{display:grid;gap:10px}
+.stats div{display:flex;align-items:center;gap:10px}
+.stats b{font-size:26px;min-width:40px}
+.tl{position:relative;padding-left:34px}
+.tl .track{position:absolute;left:12px;top:0;width:3px;height:100%;background:repeating-linear-gradient(var(--line) 0 8px,transparent 8px 14px)}
+.tl .fill{position:absolute;left:12px;top:0;width:3px;height:0;background:linear-gradient(var(--accent),#9b6bff);transition:height .2s linear}
+.ev{position:relative;margin:0 0 18px;opacity:.15;transform:translateX(18px);transition:all .6s ease}
+.ev.on{opacity:1;transform:none}
+.ev .pin{position:absolute;left:-30px;top:6px;width:20px;height:20px;border-radius:50%;border:3px solid var(--bg);box-shadow:0 0 0 2px var(--pending);background:var(--bg)}
+.ev.on .pin{animation:ring 2s infinite}
+@keyframes ring{0%{box-shadow:0 0 0 2px var(--pending),0 0 0 2px rgba(79,140,255,.6)}100%{box-shadow:0 0 0 2px var(--pending),0 0 0 14px rgba(79,140,255,0)}}
+.ev .when{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.ev .box{background:var(--panel);border:1px dashed #3a4050;border-radius:12px;padding:10px 14px;display:flex;gap:12px;align-items:center}
+.ev .emo{font-size:28px;line-height:1}
+.ev .t{font-weight:600}
+.ev .tag{font-size:12px;font-weight:700;color:var(--pending)}
+.ev.now .pin{background:var(--hit);box-shadow:0 0 0 2px var(--hit);animation:none}
+.ev.now .box{border-style:solid;border-color:var(--hit)}
+.ev.now .tag{color:var(--hit)}
+.chart svg{width:100%;height:auto;display:block}
+.chart .grid line{stroke:var(--line)}
+.chart .axis text{fill:var(--muted);font:17px Inter}
+.chart .ln{fill:none;stroke:var(--miss);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.chart .fan{fill:none;stroke-width:3;stroke-dasharray:6 7;opacity:0;transition:opacity .6s}
+.chart .lbl{font:700 17px Inter;opacity:0;transition:opacity .6s}
+.chart .divider{stroke:var(--muted);stroke-dasharray:4 4}
+.chart .qm{font:800 60px Inter;fill:var(--pending);opacity:0;transition:opacity 1s}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.tc{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;overflow:hidden}
+.tc .ic{font-size:40px;line-height:1;margin-bottom:6px;display:inline-block}
+.tc.in .ic{animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px)}}
+.tc h3{margin:0 0 8px;font-size:17px;padding-right:90px}
+.tc .vs{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px}
+.tc .vs .k{color:var(--muted);font-weight:600;font-size:11px;padding-top:3px;letter-spacing:.04em}
+.stamp{position:absolute;top:14px;right:12px;font:800 12px Inter;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border:3px solid var(--pending);color:var(--pending);border-radius:8px;transform:rotate(-12deg) scale(3);opacity:0}
+.tc.in .stamp{animation:stamp .45s cubic-bezier(.2,1.6,.4,1) .4s forwards,blink 2.2s ease-in-out 1.2s infinite}
+@keyframes stamp{to{transform:rotate(-12deg) scale(1);opacity:1}}
+@keyframes blink{50%{opacity:.45}}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-top:10px}
+.clear{background:#123524;color:var(--hit)}
+.fuzzy{background:#2a2142;color:var(--fuzzy)}
+.months{display:grid;gap:14px}
+.mg{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.mg h3{margin:0 0 10px;font-size:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;font-weight:600;padding:5px 10px;border-radius:999px;background:#1d2230;border:1px solid #2c3344;opacity:0;transform:scale(.6);transition:all .4s cubic-bezier(.2,1.6,.4,1)}
+.mg.in .chip{opacity:1;transform:none}
+.meter{margin-top:14px}
+.meter .lab{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);font-weight:600}
+.meter .tr{height:12px;background:#0b0d10;border-radius:10px;overflow:hidden;margin-top:4px}
+.meter .tr i{display:block;height:100%;width:0;border-radius:10px;background:linear-gradient(90deg,var(--partial),var(--miss));transition:width 1.6s ease .6s}
+.mg.in .meter .tr i{width:97%}
+.verdict{margin-top:8px;font-size:13px;color:var(--miss);font-weight:700}
+.rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.rule{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.rule .e{font-size:34px}
+.rule b{display:block;margin:6px 0 4px}
+.rule p{margin:0;color:var(--muted);font-size:14px}
+footer{margin-top:60px;border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:12px}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rv,.ev,.chip{opacity:1!important;transform:none!important}
+  .stamp{opacity:1;transform:rotate(-12deg)}
+  .mg .meter .tr i{width:97%}
+}
+</style>
+</head>
+<body>
+<nav><div class="in"><a class="brand" href="/">🔭 World Ahead Check</a><a href="/2026">2026</a><a class="cur" href="/2027">2027</a></div></nav>
+<div class="wrap">
+
+<header class="rv">
+  <div class="kicker">Forecast Check · 2027 · live tracker · baseline as of 19 Nov 2026</div>
+  <h1>2027: ten forecasts on the clock</h1>
+  <p class="sub">Nothing has been scored yet. This page logs what was predicted, where things stand today, and the exact event that will settle each forecast.</p>
+</header>
+
+<section class="panel hero rv" id="hero">
+  <svg class="ring" viewBox="0 0 220 220" aria-label="Progress through 2027">
+    <circle cx="110" cy="110" r="84" fill="none" stroke="#0b0d10" stroke-width="22"/>
+    <circle class="prog" id="prog" cx="110" cy="110" r="84" transform="rotate(-90 110 110)"/>
+    <text class="big" x="110" y="112" text-anchor="middle" id="ringBig">–</text>
+    <text class="small" x="110" y="136" text-anchor="middle" id="ringSmall">of 2027 elapsed</text>
+  </svg>
+  <div class="stats">
+    <div><i class="dot" style="background:var(--pending)"></i><b style="color:var(--pending)">10</b>forecasts open</div>
+    <div><i class="dot" style="background:var(--hit)"></i><b style="color:var(--hit)">0</b>scored hit</div>
+    <div><i class="dot" style="background:var(--miss)"></i><b style="color:var(--miss)">0</b>scored miss</div>
+    <div><i class="dot" style="background:var(--fuzzy)"></i><b style="color:var(--fuzzy)" id="fuzzyN">0</b>too fuzzy to score cleanly</div>
+  </div>
+</section>
+
+<h2 class="rv">2027's calendar: what's already scheduled</h2>
+<p class="sub rv">Fixed dates where forecasts get tested. Blue rings are still to come.</p>
+<div class="tl" id="tl"><div class="track"></div><div class="fill" id="tlFill"></div></div>
+
+<h2 class="rv">Where borrowing costs go next is anyone's guess</h2>
+<p class="sub rv">US 10-year yield: the 2026 path (solid, approximate), then three possible 2027 paths (dotted)</p>
+<div class="panel chart rv" id="chart">
+  <svg viewBox="0 -10 600 290" id="chartSvg" aria-label="2026 yield path rising to 5.3%, then three possible 2027 paths: snap higher, plateau, or ease"></svg>
+  <div class="src">2026 data: <a href="https://internationalfinance.com/?p=59090">International Finance</a><a href="https://www.irishtimes.com/business/2026/10/01/global-bond-sell-off-pushes-10-year-treasury-yield-to-highest-since-2002/">Irish Times</a>. The 2027 paths are illustrations, not forecasts.</div>
+</div>
+
+<h2 class="rv">The ten 2027 forecasts</h2>
+<p class="sub rv"><span class="badge clear">Clear</span> means one event or number settles it. <span class="badge fuzzy">Fuzzy</span> means it will need judgement.</p>
+<div class="cards" id="cards"></div>
+<div class="src">Forecast summaries: <a href="https://intellicurious.com/2026/11/17/the-world-ahead-2027-the-economist-magazine-2/">Intellicurious</a><a href="https://www.editorandpublisher.com/stories/the-economist-launches-the-world-ahead-2027-heralding-the-post-trump-era-amid-upheaval-from-bond,264550">Editor &amp; Publisher</a><a href="https://www.turkiyetoday.com/world/a-new-war-in-2027-the-economist-flags-10-trends-shaping-the-year-3232573">Türkiye Today</a></div>
+
+<h2 class="rv">The viral "month wheel" theory</h2>
+<p class="sub rv">An Instagram carousel split the 2027 cover into months and gave each symbol a meaning. The posters themselves call these "hypotheses". Here's every claim, with a meter for how likely something matching it is to happen somewhere in the world anyway.</p>
+<div class="months" id="months"></div>
+
+<h3 class="rv" style="margin-top:28px">How we'll score the wheel (fairly)</h3>
+<div class="rules rv">
+  <div class="rule"><div class="e">📌</div><b>Named in advance only</b><p>A claim counts only if it named a place, actor or event before it happened.</p></div>
+  <div class="rule"><div class="e">📅</div><b>Right month, right thing</b><p>"Conflict in May" scores only if a new, specific conflict starts or escalates in May.</p></div>
+  <div class="rule"><div class="e">🧮</div><b>Compare with a dartboard</b><p>We'll check whether the wheel beats random month labels. If it doesn't, it carries no information.</p></div>
+  <div class="rule"><div class="e">🔁</div><b>Logged monthly</b><p>Each month gets a verdict on this page, misses included.</p></div>
+</div>
+
+<footer>
+  Independent fan analysis. Not affiliated with or endorsed by The Economist; no cover artwork is reproduced. Forecasts are paraphrased from public summaries of "The World Ahead 2027". Month-wheel claims are paraphrased from a third-party social-media carousel, which may itself be AI-generated. "Where it stands" figures are approximate, as of November 2026. Not financial advice.
+</footer>
+</div>
+
+<script>
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const TRENDS = [
+ {n:1,ic:"🇺🇸",t:"Trump's last act",q:"fuzzy",p:"No lame duck: more executive orders, court fights and foreign action, while the race to succeed him starts.",now:"Democrats took both houses of Congress on 3 Nov 2026. Trump has vowed to veto their bills.",settle:"Count of vetoes, executive orders and new military actions; first 2028 candidates declare."},
+ {n:2,ic:"🛢️",t:"Aftershocks from Iran",q:"clear",p:"War fallout reroutes energy, makes fertiliser scarce and threatens food supplies; Iran's crackdown hardens.",now:"Oil held above $100 in autumn 2026, and the Fed is fighting war-driven inflation.",settle:"Brent oil and urea (fertiliser) prices; any food-price emergency."},
+ {n:3,ic:"🌡️",t:"Hottest year ever, again",q:"clear",p:"A super El Niño makes 2027 the hottest year on record, with more drought, heat, fire and storms.",now:"El Niño is building, according to the forecast.",settle:"Copernicus / NOAA annual global temperature (published Jan 2028)."},
+ {n:4,ic:"🤖",t:"AI backlash and risks",q:"fuzzy",p:"Opaque AI borrowing raises crash risk; stronger models fuel cyber-attacks.",now:"The Nasdaq entered a correction in Nov 2026. Fitch calls AI a top credit risk.",settle:"An AI company credit event or crash; a major cyber-attack attributed to AI."},
+ {n:5,ic:"🇫🇷",t:"Europe's populist right",q:"clear",p:"Marine Le Pen's National Rally has a good chance of winning France's presidency.",now:"The campaign is underway for the spring 2027 election.",settle:"French presidential run-off result."},
+ {n:6,ic:"📉",t:"Bond-market pressure",q:"fuzzy",p:"Borrowing costs keep rising; the strain is unsustainable and something snaps.",now:"The US 10-year hit about 5.3% in Oct 2026, its highest since 2002. UK 30-year gilts topped 6%.",settle:"A sovereign or major corporate default, a bailout, or an emergency central-bank intervention."},
+ {n:7,ic:"🌏",t:"Taiwan's deadline",q:"clear",p:"Xi reportedly wants forces able to take Taiwan by 2027; China may act or wait for Taiwan's 2028 vote.",now:"Ongoing military pressure around the island.",settle:"Blockade, quarantine or attack: yes or no. Scale of drills around the PLA centenary on 1 Aug."},
+ {n:8,ic:"🛍️",t:"The Ozempic effect",q:"fuzzy",p:"Slimmer consumers go 'revenge shopping'; drugmakers chase longevity drugs.",now:"Two GLP-1 pills launched in the US in 2026.",settle:"Clothing, cosmetics and gym spending data; longevity-drug trial starts."},
+ {n:9,ic:"🚀",t:"Cheaper space launch",q:"clear",p:"Starship starts regular satellite launches; Chinese firms reuse boosters; orbital data centres get plausible.",now:"Starship is still in its test campaign.",settle:"Number of operational Starship launches; the first reflown Chinese orbital booster."},
+ {n:10,ic:"🎬",t:"Rebooting Hollywood",q:"fuzzy",p:"Star Wars turns 50 with a reboot film; Avengers return; cheap creator-made hits test franchise appeal.",now:"Big franchise releases are slated for 2027.",settle:"Box office of the franchise reboots vs YouTube-creator films."}
+];
+
+const EVENTS = [
+ {w:"19 Nov 2026",e:"📍",t:"Baseline recorded: forecasts published, numbers logged",tag:"Today",now:1},
+ {w:"1 Jan",e:"🎆",t:"2027 begins: the clock starts on all ten forecasts",tag:"Upcoming"},
+ {w:"3 Jan",e:"🏛️",t:"New Congress convenes with Democrats in control",tag:"Tests trend 1"},
+ {w:"Spring",e:"🇫🇷",t:"French presidential election",tag:"Settles trend 5"},
+ {w:"25 May",e:"🎬",t:"Star Wars turns 50",tag:"Tests trend 10"},
+ {w:"1 Aug",e:"🌏",t:"100th anniversary of China's People's Liberation Army",tag:"Watch for trend 7"},
+ {w:"All year",e:"🌡️",t:"Monthly global temperature records (El Niño)",tag:"Builds toward trend 3"},
+ {w:"Jan 2028",e:"🗳️",t:"Taiwan's presidential election; 2027 climate data published",tag:"Final verdicts on trends 3 and 7"}
+];
+
+const MONTHS = [
+ {h:"January – April",c:["Global leaders summit","Trade negotiations","Control & surveillance","Middle East tensions","Transport & aviation","Economic downturn","A deadline / countdown","Russia's central role","Supply crisis"]},
+ {h:"May – August",c:["Conflict & escalation","Shipping & supply chains","Pollution & industry","Military mobilisation","Energy & resources","A new order or decision","Surveillance & observation","Displacement & crisis","Media & narratives"]},
+ {h:"September – December",c:["Satellites & surveillance","Missiles / programmes","China mobilisation","Elites / summit","Institutions & governance","Health & pharma","Fires & climate extremes","Attacks & escalation","Robotics / AI"]}
+];
+
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add("in"); e.target.dispatchEvent(new Event("reveal")); io.unobserve(e.target);} }), {threshold:.25});
+const watch = el => reduce ? (el.classList.add("in"), setTimeout(()=>el.dispatchEvent(new Event("reveal")))) : io.observe(el);
+
+(function(){
+  const C = 2*Math.PI*84, prog = document.getElementById("prog");
+  prog.style.strokeDasharray = C; prog.style.strokeDashoffset = C;
+  const start = Date.UTC(2027,0,1), end = Date.UTC(2028,0,1), now = Date.now();
+  const big = document.getElementById("ringBig"), small = document.getElementById("ringSmall");
+  let frac;
+  if (now < start){ frac = 0; big.textContent = Math.ceil((start-now)/864e5) + "d"; small.textContent = "until 2027 starts"; }
+  else if (now >= end){ frac = 1; big.textContent = "Done"; small.textContent = "time to score"; }
+  else { frac = (now-start)/(end-start); big.textContent = Math.round(frac*100) + "%"; }
+  document.getElementById("fuzzyN").textContent = TRENDS.filter(t => t.q==="fuzzy").length;
+  const box = document.getElementById("hero");
+  box.addEventListener("reveal", () => requestAnimationFrame(() => prog.style.strokeDashoffset = C*(1-Math.max(frac,.015))));
+  watch(box);
+})();
+
+(function(){
+  const tl = document.getElementById("tl");
+  tl.insertAdjacentHTML("beforeend", EVENTS.map(e => `
+    <div class="ev ${e.now?'now':''}"><i class="pin"></i><div class="when">${esc(e.w)}</div>
+      <div class="box"><span class="emo">${e.e}</span><div><div class="t">${esc(e.t)}</div><div class="tag">${esc(e.tag)}</div></div></div></div>`).join(""));
+  const evs = [...tl.querySelectorAll(".ev")], fill = document.getElementById("tlFill");
+  const on = () => { const r = tl.getBoundingClientRect(), mid = innerHeight*.7;
+    fill.style.height = Math.max(0,Math.min(1,(mid-r.top)/r.height))*100 + "%";
+    evs.forEach(ev => { if (ev.getBoundingClientRect().top < mid) ev.classList.add("on"); }); };
+  if (reduce){ evs.forEach(e => e.classList.add("on")); fill.style.height="100%"; } else { addEventListener("scroll", on, {passive:true}); on(); }
+})();
+
+(function(){
+  const svg = document.getElementById("chartSvg");
+  const X = m => 50 + m*(530/24), Y = v => 240 - (v-3.4)*(200/2.6);
+  const past = [[0,4.15],[1.4,3.95],[4.5,4.55],[8,4.8],[9.15,5.31],[10.6,5.2]];
+  let s = '<g class="grid">', ax = '<g class="axis">';
+  [3.5,4,4.5,5,5.5,6].forEach(v => { s += `<line x1="50" x2="580" y1="${Y(v)}" y2="${Y(v)}"/>`; ax += `<text x="2" y="${Y(v)+5}">${v.toFixed(1)}%</text>`; });
+  ax += `<text x="${X(5.5)}" y="268" text-anchor="middle">2026</text><text x="${X(17.5)}" y="268" text-anchor="middle">2027</text></g>`;
+  s += `</g><line class="divider" x1="${X(12)}" x2="${X(12)}" y1="10" y2="240"/>`;
+  const d = past.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
+  const last = past[past.length-1];
+  const fans = [
+    {c:"#e5534b",pts:[[14,5.5],[18,5.8],[23,6.1]],l:"Snaps higher"},
+    {c:"#e0a43a",pts:[[14,5.25],[18,5.3],[23,5.2]],l:"Plateau"},
+    {c:"#2fb67c",pts:[[14,5.0],[18,4.6],[23,4.3]],l:"Eases"}
+  ];
+  const fanSvg = fans.map(f => {
+    const fd = `M${X(last[0])} ${Y(last[1])} ` + f.pts.map(p => `L${X(p[0])} ${Y(p[1])}`).join(" ");
+    const e = f.pts[f.pts.length-1];
+    return `<path class="fan" d="${fd}" stroke="${f.c}"/><text class="lbl" x="${X(e[0])-4}" y="${Y(e[1])-10}" text-anchor="end" fill="${f.c}">${f.l}</text>`;
+  }).join("");
+  svg.innerHTML = s + ax + `<path class="ln" id="ln" d="${d}"/>` + fanSvg + `<text class="qm" x="${X(16)}" y="${Y(3.75)}" text-anchor="middle">?</text>`;
+  const ln = document.getElementById("ln"), L = ln.getTotalLength();
+  ln.style.strokeDasharray = L; ln.style.strokeDashoffset = L;
+  const box = document.getElementById("chart");
+  box.addEventListener("reveal", () => {
+    ln.style.transition = reduce?"none":"stroke-dashoffset 1.8s ease";
+    requestAnimationFrame(()=> ln.style.strokeDashoffset = 0);
+    svg.querySelectorAll(".fan,.lbl").forEach((el,i)=> setTimeout(()=> el.style.opacity = 1, reduce?0:1900 + Math.floor(i/2)*450));
+    setTimeout(()=> svg.querySelector(".qm").style.opacity = .5, reduce?0:3400);
+  });
+  watch(box);
+})();
+
+(function(){
+  const box = document.getElementById("cards");
+  box.innerHTML = TRENDS.map(t => `
+    <article class="tc"><span class="stamp">Pending</span><div class="ic">${t.ic}</div>
+      <h3>${t.n}. ${esc(t.t)}</h3>
+      <div class="vs"><span class="k">SAYS</span><span>${esc(t.p)}</span>
+        <span class="k">NOW</span><span>${esc(t.now)}</span>
+        <span class="k">SETTLED BY</span><span>${esc(t.settle)}</span></div>
+      <span class="badge ${t.q}">${t.q==="clear"?"Clear test":"Fuzzy: needs judgement"}</span>
+    </article>`).join("");
+  box.querySelectorAll(".tc").forEach(watch);
+})();
+
+(function(){
+  const box = document.getElementById("months");
+  box.innerHTML = MONTHS.map(m => `
+    <div class="mg"><h3>${esc(m.h)}</h3>
+      <div class="chips">${m.c.map((c,i)=>`<span class="chip" style="transition-delay:${i*70}ms">${esc(c)}</span>`).join("")}</div>
+      <div class="meter"><div class="lab"><span>Chance something like this happens somewhere anyway</span><span>~certain</span></div><div class="tr"><i></i></div></div>
+      <div class="verdict">⚠️ Can't fail, so it can't predict. No place, no actor, no date.</div>
+    </div>`).join("");
+  box.querySelectorAll(".mg").forEach(watch);
+})();
+
+document.querySelectorAll(".rv").forEach(watch);
+</script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forecast Check 2026 — did the predictions come true?</title>
+<meta name="description" content="An animated, independent scorecard: 2026's year-ahead forecasts and the viral cover-decoding theories, checked against what actually happened.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Source+Serif+4:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262b35;--text:#e8eaf0;--muted:#9aa3b2;
+--hit:#2fb67c;--partial:#e0a43a;--miss:#e5534b;--unscored:#6b7280;--accent:#4f8cff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px}
+h1{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(28px,7vw,46px);line-height:1.1;margin:6px 0 10px}
+h2{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(22px,5vw,30px);margin:64px 0 6px}
+.kicker{text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--muted);font-weight:600}
+.sub{color:var(--muted);margin:0 0 18px}
+.src{font-size:12px;color:var(--muted);margin-top:10px}
+.src a{margin-right:8px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+
+/* reveal on scroll */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+
+/* ---------- score ring ---------- */
+.hero{display:grid;grid-template-columns:220px 1fr;gap:22px;align-items:center}
+@media(max-width:620px){.hero{grid-template-columns:1fr;justify-items:center;text-align:center}}
+.ring{width:220px;height:220px}
+.ring circle.seg{fill:none;stroke-width:22;transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)}
+.ring .big{font:800 46px Inter;fill:var(--text)}
+.ring .small{font:600 13px Inter;fill:var(--muted)}
+.legend{display:grid;gap:8px}
+.legend div{display:flex;align-items:center;gap:10px;font-size:15px}
+.dot{width:14px;height:14px;border-radius:50%;flex:none}
+.legend b{font-size:22px;min-width:24px}
+
+/* ---------- timeline ---------- */
+.tl{position:relative;padding-left:34px}
+.tl .track{position:absolute;left:12px;top:0;width:3px;height:100%;background:var(--line);border-radius:3px}
+.tl .fill{position:absolute;left:12px;top:0;width:3px;height:0;background:linear-gradient(var(--accent),#9b6bff);border-radius:3px;transition:height .2s linear}
+.ev{position:relative;margin:0 0 18px;opacity:.15;transform:translateX(18px);transition:all .6s ease}
+.ev.on{opacity:1;transform:none}
+.ev .pin{position:absolute;left:-30px;top:6px;width:20px;height:20px;border-radius:50%;border:3px solid var(--bg);box-shadow:0 0 0 2px currentColor;background:currentColor}
+.ev.on .pin{animation:pop .5s ease}
+.ev .when{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.ev .box{background:var(--panel);border:1px solid var(--line);border-left:4px solid currentColor;border-radius:12px;padding:10px 14px;display:flex;gap:12px;align-items:center}
+.ev .emo{font-size:28px;line-height:1}
+.ev .t{font-weight:600}
+.ev .tag{font-size:12px;font-weight:700}
+.ev.shock .box{background:linear-gradient(135deg,#3a1517,#171a21);border-color:#7a2a2a}
+.ev.shock.on .box{animation:shake .6s ease .2s}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.keyrow{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-bottom:14px}
+.keyrow span{display:flex;align-items:center;gap:6px}
+
+/* ---------- bond chart ---------- */
+.chart svg{width:100%;height:auto;display:block}
+.chart .grid line{stroke:var(--line)}
+.chart .axis text{fill:var(--muted);font:17px Inter}
+.chart .ln{fill:none;stroke:var(--miss);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.chart .area{fill:url(#g1);opacity:0;transition:opacity 1s ease 1.6s}
+.chart.in .area{opacity:1}
+.chart .pt{fill:var(--miss);opacity:0;transition:opacity .3s}
+.chart .ann{opacity:0;transition:opacity .5s}
+.chart .ann text{fill:var(--text);font:700 17px Inter}
+.chart .ann line{stroke:var(--muted);stroke-dasharray:3 3}
+
+/* ---------- trend stamps ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.tc{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px;overflow:hidden}
+.tc .ic{font-size:40px;line-height:1;margin-bottom:6px;display:inline-block}
+.tc.in .ic{animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px)}}
+.tc h3{margin:0 0 8px;font-size:17px}
+.tc .vs{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px}
+.tc .vs .k{color:var(--muted);font-weight:600;font-size:12px;padding-top:2px}
+.stamp{position:absolute;top:14px;right:12px;font:800 13px Inter;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border:3px solid currentColor;border-radius:8px;transform:rotate(-14deg) scale(3);opacity:0}
+.tc.in .stamp{animation:stamp .45s cubic-bezier(.2,1.6,.4,1) .5s forwards}
+@keyframes stamp{to{transform:rotate(-14deg) scale(1);opacity:1}}
+.c-hit{color:var(--hit)}.c-partial{color:var(--partial)}.c-miss{color:var(--miss)}.c-unscored{color:var(--unscored)}
+.bar{height:8px;background:#0b0d10;border-radius:8px;margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:8px;transition:width 1.2s ease .3s}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.filters button{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer}
+.filters button.on{border-color:var(--accent);background:#1c2740}
+
+/* ---------- flip cards ---------- */
+.flips{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.flip{perspective:900px;height:230px;cursor:pointer;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left}
+.flip .in3d{position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.flip.flipped .in3d{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;border:1px solid var(--line);padding:16px;display:flex;flex-direction:column}
+.front{background:var(--panel);align-items:center;justify-content:center;text-align:center}
+.front .sym{font-size:64px;line-height:1}
+.front .claim{font:700 20px "Source Serif 4",serif;margin-top:10px}
+.front .hint{font-size:12px;color:var(--muted);margin-top:auto}
+.back{background:#11141a;transform:rotateY(180deg);font-size:14px;gap:8px}
+.back .vd{font:800 14px Inter;letter-spacing:.08em;text-transform:uppercase}
+
+/* ---------- sharpshooter ---------- */
+.barn svg{width:100%;height:auto;display:block;border-radius:12px}
+.hole{fill:#111;stroke:#000;opacity:0}
+.tgt{fill:none;stroke-width:5;stroke-dasharray:400;stroke-dashoffset:400}
+.barn .cap{font:700 20px Inter;fill:#fff;opacity:0}
+.replay{margin-top:10px;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font:inherit;cursor:pointer}
+
+/* ---------- lessons ---------- */
+.lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.lesson{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.lesson .e{font-size:34px}
+.lesson b{display:block;margin:6px 0 4px}
+.lesson p{margin:0;color:var(--muted);font-size:14px}
+
+/* ---------- 2027 watch ---------- */
+.watch{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.w{display:flex;gap:12px;align-items:center;background:var(--panel);border:1px dashed #3a4050;border-radius:14px;padding:12px}
+.w .e{font-size:30px}
+.w .m{font-size:12px;color:var(--muted)}
+.pulse{width:10px;height:10px;border-radius:50%;background:var(--accent);margin-left:auto;flex:none;animation:pl 1.8s infinite}
+@keyframes pl{0%{box-shadow:0 0 0 0 rgba(79,140,255,.7)}100%{box-shadow:0 0 0 12px rgba(79,140,255,0)}}
+
+footer{margin-top:60px;border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:12px}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rv,.ev{opacity:1!important;transform:none!important}
+  .stamp{opacity:1;transform:rotate(-14deg)}
+}
+nav{position:sticky;top:0;z-index:5;background:rgba(15,17,21,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .in{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;font-weight:600;font-size:14px}
+nav a{color:var(--muted);text-decoration:none}nav a.cur{color:var(--text)}nav .brand{color:var(--text);margin-right:auto}
+</style>
+</head>
+<body>
+<nav><div class="in"><a class="brand" href="/">🔭 World Ahead Check</a><a class="cur" href="/2026">2026</a><a href="/2027">2027</a></div></nav>
+<div class="wrap">
+
+<header class="rv">
+  <div class="kicker">Forecast Check · 2026 · updated 19 Nov 2026</div>
+  <h1>Did 2026's most-hyped predictions come true?</h1>
+  <p class="sub">Scroll to watch the year play out.</p>
+</header>
+
+<!-- SCORE RING -->
+<section class="panel hero rv" id="score">
+  <svg class="ring" viewBox="0 0 220 220" aria-label="Score ring">
+    <circle cx="110" cy="110" r="84" fill="none" stroke="#0b0d10" stroke-width="22"/>
+    <g id="segs" transform="rotate(-90 110 110)"></g>
+    <text class="big" x="110" y="112" text-anchor="middle" id="ringNum">0/10</text>
+    <text class="small" x="110" y="136" text-anchor="middle">trends fully right</text>
+  </svg>
+  <div class="legend" id="legend"></div>
+</section>
+
+<!-- TIMELINE -->
+<h2 class="rv">2026, month by month</h2>
+<p class="sub rv">Green: forecast said it. Red: nobody saw it coming.</p>
+<div class="keyrow rv">
+  <span><i class="dot" style="background:var(--hit)"></i>Predicted</span>
+  <span><i class="dot" style="background:var(--partial)"></i>Half right</span>
+  <span><i class="dot" style="background:var(--miss)"></i>Wrong / not predicted</span>
+</div>
+<div class="tl" id="tl"><div class="track"></div><div class="fill" id="tlFill"></div></div>
+<div class="src">Sources: <a href="https://krdo.com/news/national-world/cnn-national/2026/11/17/2026-in-review-fast-facts/">CNN</a><a href="https://wdez.com/?p=929294">Reuters</a><a href="https://asiatimes.com/2026/05/trump-xi-summit-puts-us-exports-iran-at-center-of-reset-bid/">Asia Times</a><a href="https://ktla.com/news/nationworld/north-america-shatters-world-cup-attendance-records-fifa-says/amp/">KTLA</a><a href="https://www.irishtimes.com/business/2026/10/01/global-bond-sell-off-pushes-10-year-treasury-yield-to-highest-since-2002/">Irish Times</a><a href="https://www.kuow.org/npr-news/2026-11-03/democrats-win-full-control-of-congress-ushering-in-a-new-era-of-divided-government">NPR</a><a href="https://www.eurekalert.org/news-releases/1150611">Global Carbon Project</a></div>
+
+<!-- BOND CHART -->
+<h2 class="rv">The prediction that came true: borrowing costs jumped</h2>
+<p class="sub rv">US 10-year Treasury yield in 2026, approximate, from news reports</p>
+<div class="panel chart rv" id="chart">
+  <svg viewBox="0 -10 600 290" id="chartSvg" aria-label="US 10-year yield rising from about 4% to over 5.3% in 2026">
+    <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e5534b" stop-opacity=".35"/><stop offset="1" stop-color="#e5534b" stop-opacity="0"/></linearGradient></defs>
+  </svg>
+  <div class="src">Sources: <a href="https://internationalfinance.com/?p=59090">International Finance</a><a href="https://approd6.advisorperspectives.com/articles/2026/05/15/global-bond-selloff-worsens-rising-oil-spook-investors">Bloomberg via Advisor Perspectives</a><a href="https://www.irishtimes.com/business/2026/09/01/bond-sell-off-accelerates-globally-as-investors-bet-on-interest-rate-hikes/">Irish Times</a></div>
+</div>
+
+<!-- TREND STAMPS -->
+<h2 class="rv">The ten forecasts, stamped</h2>
+<p class="sub rv">The bar under each card shows how much of the forecast came true.</p>
+<div class="filters rv" id="filters"></div>
+<div class="cards" id="cards"></div>
+
+<!-- FLIP CARDS -->
+<h2 class="rv">The cover theory: tap a symbol</h2>
+<p class="sub rv">Viral posts said the 2026 cover meant war, pestilence and financial collapse. Tap a card to see what happened.</p>
+<div class="flips rv" id="flips"></div>
+<div class="src">Decoder claims: <a href="https://michaeltsnyder.substack.com/p/super-creepy-the-world-ahead-2026">Snyder / ZeroHedge</a><a href="https://prophecyupdate.blogspot.com/2025/11/things-to-come-world-ahead-2026.html?m=1">Prophecy Update</a></div>
+
+<!-- SHARPSHOOTER -->
+<h2 class="rv">Why decoding feels right</h2>
+<p class="sub rv">This is the "Texas sharpshooter" trick: fire first, then paint the target around wherever the shots landed.</p>
+<div class="panel barn rv" id="barn">
+  <svg viewBox="0 0 600 300" id="barnSvg" aria-label="Animation: random shots, then a target drawn around them afterwards">
+    <rect width="600" height="300" fill="#6b2f22"/>
+    <g stroke="#5a271c" stroke-width="3">
+      <line x1="0" y1="60" x2="600" y2="60"/><line x1="0" y1="120" x2="600" y2="120"/>
+      <line x1="0" y1="180" x2="600" y2="180"/><line x1="0" y1="240" x2="600" y2="240"/>
+    </g>
+    <g id="holes"></g>
+    <g id="tgts"></g>
+    <text class="cap" id="cap1" x="300" y="40" text-anchor="middle">1. Events happen (random shots)</text>
+    <text class="cap" id="cap2" x="300" y="285" text-anchor="middle">2. Afterwards: "See? The cover predicted it!"</text>
+  </svg>
+  <button class="replay" id="replay">▶ Replay</button>
+</div>
+
+<!-- LESSONS -->
+<h2 class="rv">What 2026 teaches</h2>
+<div class="lessons rv">
+  <div class="lesson"><div class="e">🐢</div><b>Slow trends: predictable</b><p>Debt, bond yields and scheduled events were called correctly.</p></div>
+  <div class="lesson"><div class="e">⚡</div><b>Shocks: not predictable</b><p>The Iran war, the year's biggest event, wasn't on the list.</p></div>
+  <div class="lesson"><div class="e">🎯</div><b>About 59% hit rate</b><p>That's the series' long-run record over 154 predictions. <a href="https://www.envisioning.com/hindsight/the-economist">Source</a></p></div>
+  <div class="lesson"><div class="e">🛟</div><b>Plan for resilience</b><p>Savings, insurance and skills protect you from any shock, whenever it comes.</p></div>
+</div>
+
+<!-- 2027 -->
+<h2 class="rv">Coming next: tracking 2027</h2>
+<div class="watch rv">
+  <div class="w"><div class="e">🗳️</div><div><b>Le Pen wins France?</b><div class="m">Election result</div></div><i class="pulse"></i></div>
+  <div class="w"><div class="e">📉</div><div><b>Bond strain snaps?</b><div class="m">US/France 10y yield, defaults</div></div><i class="pulse"></i></div>
+  <div class="w"><div class="e">🛢️</div><div><b>Iran aftershocks</b><div class="m">Brent oil, urea price</div></div><i class="pulse"></i></div>
+  <div class="w"><div class="e">🌡️</div><div><b>Hottest year ever?</b><div class="m">Copernicus / NOAA</div></div><i class="pulse"></i></div>
+  <div class="w"><div class="e">🌏</div><div><b>Taiwan 2027 deadline</b><div class="m">PLA drills, blockade</div></div><i class="pulse"></i></div>
+  <div class="w"><div class="e">🤖</div><div><b>AI debt crash?</b><div class="m">AI credit spreads, cyber-attacks</div></div><i class="pulse"></i></div>
+  <div class="w"><div class="e">🚀</div><div><b>Starship goes regular</b><div class="m">Launch count</div></div><i class="pulse"></i></div>
+</div>
+
+<footer>
+  Independent fan analysis. Not affiliated with or endorsed by The Economist; no cover artwork is reproduced. Forecasts are paraphrased from public summaries of "The World Ahead 2026", mainly <a href="https://www.westpac.com.au/personal-banking/private-banking-services/curated/summer-reading-guide-2026/tom-standages-ten-trends-to-watch-in-2026/">Westpac's reprint</a>. Verdicts are judgement calls, each linked to its evidence. Chart values are approximate. Not financial advice.
+</footer>
+</div>
+
+<script>
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const COLORS = {hit:"#2fb67c",partial:"#e0a43a",miss:"#e5534b",unscored:"#6b7280"};
+const LABEL = {hit:"Hit",partial:"Partial",miss:"Miss",unscored:"Unscored"};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- data ---------- */
+const TRENDS = [
+ {n:1,ic:"🇺🇸",t:"America's 250th & midterms",v:"hit",pct:90,p:"Bitter divide; voters deliver a verdict in November; Trump keeps ruling by decree.",h:"Democrats won both chambers. Trump vows vetoes.",s:[["NPR","https://www.kuow.org/npr-news/2026-11-03/democrats-win-full-control-of-congress-ushering-in-a-new-era-of-divided-government"]]},
+ {n:2,ic:"🧭",t:"Geopolitical drift",v:"unscored",pct:0,p:"No clean cold war; the old order weakens; ad-hoc coalitions.",h:"Too vague to test with a number.",s:[]},
+ {n:3,ic:"🕊️",t:"War or peace",v:"partial",pct:50,p:"The Gaza peace may hold; Ukraine, Sudan and Myanmar keep fighting.",h:"Gaza truce on paper only (1,400+ killed). Ukraine fought on. Iran war missed.",s:[["J Street","https://jstreet.org/resources/one-year-assessing-status-gaza-ceasefire"]]},
+ {n:4,ic:"🇪🇺",t:"Problems for Europe",v:"unscored",pct:0,p:"Europe can't fund defence, growth and deficit cuts all at once.",h:"Not checked yet. Yields and inflation did rise.",s:[["Reuters","https://www.businessday.co.za/markets/2026-09-01-global-bond-yields-surge-as-oil-prices-and-rate-hike-fears-weigh-on-markets/"]]},
+ {n:5,ic:"🤝",t:"China's opportunity",v:"hit",pct:85,p:"Tactical US deals on soybeans and chips.",h:"Beijing summit in May: soybeans, farm goods, Boeing jets; H200 chips cleared.",s:[["Asia Times","https://asiatimes.com/2026/05/trump-xi-summit-puts-us-exports-iran-at-center-of-reset-bid/"]]},
+ {n:6,ic:"🏦",t:"Fed chair & bond risk",v:"hit",pct:85,p:"New Fed chair in May; bond-crisis risk rising.",h:"Warsh took over 22 May. US 10-year yield hit its highest since 2002.",s:[["Irish Times","https://www.irishtimes.com/business/2026/10/01/global-bond-sell-off-pushes-10-year-treasury-yield-to-highest-since-2002/"]]},
+ {n:7,ic:"🤖",t:"AI bubble fears",v:"partial",pct:50,p:"The AI bubble could burst; job worries grow.",h:"Chip stocks lost $1tn in July; Nasdaq correction in Nov. No burst.",s:[["XTB","https://www.xtb.com/en/education/ai-bubble"]]},
+ {n:8,ic:"🌍",t:"Mixed climate picture",v:"partial",pct:45,p:"Emissions have probably peaked.",h:"Fossil CO₂ −0.4%, but mostly the oil shock, not a confirmed peak.",s:[["GCP","https://www.eurekalert.org/news-releases/1150611"]]},
+ {n:9,ic:"⚽",t:"Sporting values",v:"miss",pct:15,p:"Politics could keep fans away from the World Cup.",h:"Record crowds: 4.6M in the group stage, stadiums 99% full.",s:[["KTLA","https://ktla.com/news/nationworld/north-america-shatters-world-cup-attendance-records-fifa-says/amp/"]]},
+ {n:10,ic:"💊",t:"Ozempic, but better",v:"hit",pct:95,p:"Cheaper GLP-1 pills arrive.",h:"Wegovy pill (Jan) and Foundayo pill (Apr, $149/month).",s:[["Reuters","https://wdez.com/?p=929294"]]}
+];
+
+const EVENTS = [
+ {w:"January",e:"💊",t:"Wegovy weight-loss pill launches in the US",tag:"Forecast ✓ (trend 10)",c:"hit"},
+ {w:"28 February",e:"💥",t:"US-Israeli strikes on Iran kill Khamenei; war begins",tag:"NOT in any forecast",c:"miss",shock:1},
+ {w:"1 April",e:"💊",t:"Second weight-loss pill (Foundayo) approved",tag:"Forecast ✓ (trend 10)",c:"hit"},
+ {w:"14–15 May",e:"🤝",t:"Trump–Xi Beijing summit: soybeans and farm deals",tag:"Forecast ✓ (trend 5)",c:"hit"},
+ {w:"22 May",e:"🏦",t:"Kevin Warsh sworn in as Fed chair",tag:"Forecast ✓ (trend 6)",c:"hit"},
+ {w:"24 May",e:"🏋️",t:"Enhanced Games: one unofficial world record",tag:"Forecast ✓ event happened",c:"hit"},
+ {w:"June",e:"⚽",t:"World Cup breaks the all-time attendance record",tag:"Forecast ✗ said fans would stay away",c:"miss"},
+ {w:"July",e:"📉",t:"Chip stocks lose over $1 trillion",tag:"Half right (trend 7)",c:"partial"},
+ {w:"Sep–Oct",e:"🔥",t:"Global bond rout: US 10-year yield highest since 2002",tag:"Forecast ✓ (trend 6)",c:"hit"},
+ {w:"3 November",e:"🗳️",t:"Democrats win both houses of Congress",tag:"Forecast ✓ (trend 1)",c:"hit"},
+ {w:"10 November",e:"🌍",t:"Fossil CO₂ dips 0.4%, driven mostly by the oil shock",tag:"Half right (trend 8)",c:"partial"}
+];
+
+const FLIPS = [
+ {s:"🪖",claim:"War",vd:"Vague hit",c:"partial",back:"The Iran war came in February. But wars in Ukraine, Sudan and Myanmar were already running. The tank never said where or when."},
+ {s:"💉",claim:"Pestilence",vd:"Miss",c:"miss",back:"No pandemic or major outbreak. The year's health story was weight-loss pills."},
+ {s:"💸",claim:"Financial collapse",vd:"Miss",c:"miss",back:"Bond yields spiked hard, but there was no crash or default. A strain, not a collapse."},
+ {s:"🎂",claim:"America's 250th",vd:"Trivial",c:"unscored",back:"4 July 2026 was always on the calendar. Predicting it takes no foresight."}
+];
+
+/* ---------- reveal ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting){ e.target.classList.add("in"); e.target.dispatchEvent(new Event("reveal")); io.unobserve(e.target); }
+}), {threshold:.25});
+const watch = el => reduce ? (el.classList.add("in"), setTimeout(()=>el.dispatchEvent(new Event("reveal")))) : io.observe(el);
+
+/* ---------- score ring ---------- */
+(function(){
+  const order = ["hit","partial","miss","unscored"], C = 2*Math.PI*84;
+  const counts = Object.fromEntries(order.map(v => [v, TRENDS.filter(t => t.v===v).length]));
+  let acc = 0, segs = "";
+  order.forEach(v => {
+    const len = counts[v]/10*C;
+    segs += `<circle class="seg" cx="110" cy="110" r="84" stroke="${COLORS[v]}" stroke-dasharray="${len} ${C}" stroke-dashoffset="${len}" data-off="${-acc}"/>`;
+    acc += len;
+  });
+  document.getElementById("segs").innerHTML = segs;
+  document.getElementById("legend").innerHTML = order.map(v =>
+    `<div><i class="dot" style="background:${COLORS[v]}"></i><b class="cnt" data-n="${counts[v]}" style="color:${COLORS[v]}">0</b>${LABEL[v]}</div>`).join("") +
+    `<div><i class="dot" style="background:#e5534b;box-shadow:0 0 0 3px #3a1517"></i><b style="color:#e5534b">1</b>Year's biggest shock missed</div>`;
+  const box = document.getElementById("score");
+  box.addEventListener("reveal", () => {
+    document.querySelectorAll(".seg").forEach((c,i) => setTimeout(() => c.style.strokeDashoffset = c.dataset.off, i*250));
+    document.querySelectorAll(".cnt").forEach(el => countUp(el, +el.dataset.n));
+    countUp(document.getElementById("ringNum"), counts.hit, n => n + "/10");
+  });
+  watch(box);
+})();
+function countUp(el, to, fmt = n => n){
+  if (reduce){ el.textContent = fmt(to); return; }
+  let i = 0; const step = () => { el.textContent = fmt(i); if (i++ < to) setTimeout(step, 140); }; step();
+}
+
+/* ---------- timeline ---------- */
+(function(){
+  const tl = document.getElementById("tl");
+  tl.insertAdjacentHTML("beforeend", EVENTS.map(ev => `
+    <div class="ev c-${ev.c} ${ev.shock?'shock':''}">
+      <i class="pin"></i>
+      <div class="when">${esc(ev.w)}</div>
+      <div class="box"><span class="emo">${ev.e}</span><div><div class="t">${esc(ev.t)}</div><div class="tag">${esc(ev.tag)}</div></div></div>
+    </div>`).join(""));
+  const evs = [...tl.querySelectorAll(".ev")], fill = document.getElementById("tlFill");
+  const onScroll = () => {
+    const r = tl.getBoundingClientRect(), mid = innerHeight*0.7;
+    const prog = Math.max(0, Math.min(1, (mid - r.top) / r.height));
+    fill.style.height = (prog*100) + "%";
+    evs.forEach(ev => { if (ev.getBoundingClientRect().top < mid) ev.classList.add("on"); });
+  };
+  if (reduce){ evs.forEach(e => e.classList.add("on")); fill.style.height = "100%"; }
+  else { addEventListener("scroll", onScroll, {passive:true}); onScroll(); }
+})();
+
+/* ---------- bond chart ---------- */
+(function(){
+  const svg = document.getElementById("chartSvg");
+  const data = [[0,4.15],[1.4,3.95],[4.5,4.55],[8,4.8],[9.15,5.31]];
+  const X = m => 50 + m*(530/11), Y = v => 240 - (v-3.6)*(200/1.9);
+  let g = '<g class="grid">', ax = '<g class="axis">';
+  [4,4.5,5,5.5].forEach(v => { g += `<line x1="50" x2="580" y1="${Y(v)}" y2="${Y(v)}"/>`; ax += `<text x="2" y="${Y(v)+5}">${v.toFixed(1)}%</text>`; });
+  "JFMAMJJASOND".split("").forEach((m,i) => ax += `<text x="${X(i)}" y="265" text-anchor="middle">${m}</text>`);
+  g += "</g>"; ax += "</g>";
+  const d = data.map((p,i) => (i?"L":"M") + X(p[0]).toFixed(1) + " " + Y(p[1]).toFixed(1)).join(" ");
+  const area = d + ` L${X(9.15)} 240 L${X(0)} 240 Z`;
+  const pts = data.map(p => `<circle class="pt" r="5" cx="${X(p[0])}" cy="${Y(p[1])}"/>`).join("");
+  const ann = (m, v, txt, dy) => `<g class="ann"><line x1="${X(m)}" x2="${X(m)}" y1="${Y(v)}" y2="${Y(v)+dy}"/><text x="${X(m)}" y="${Y(v)+dy+(dy<0?-6:14)}" text-anchor="middle">${txt}</text></g>`;
+  svg.insertAdjacentHTML("beforeend", g + ax +
+    `<path class="area" d="${area}"/><path class="ln" id="ln" d="${d}"/>` + pts +
+    ann(1.9, 3.98, "💥 Iran war", 40) + ann(4.7, 4.58, "🏦 Warsh in", -50) + ann(8.3, 5.31, "5.31% · highest since 2002", -1));
+  const ln = document.getElementById("ln"), L = ln.getTotalLength();
+  ln.style.strokeDasharray = L; ln.style.strokeDashoffset = L;
+  const box = document.getElementById("chart");
+  box.addEventListener("reveal", () => {
+    ln.style.transition = reduce ? "none" : "stroke-dashoffset 2.2s ease";
+    requestAnimationFrame(() => ln.style.strokeDashoffset = 0);
+    svg.querySelectorAll(".pt").forEach((p,i) => setTimeout(() => p.style.opacity = 1, reduce?0:400 + i*420));
+    svg.querySelectorAll(".ann").forEach((a,i) => setTimeout(() => a.style.opacity = 1, reduce?0:900 + i*600));
+  });
+  watch(box);
+})();
+
+/* ---------- trend cards ---------- */
+let filter = "all";
+function renderFilters(){
+  const el = document.getElementById("filters");
+  el.innerHTML = [["all","All"],["hit","Hits"],["partial","Partial"],["miss","Misses"],["unscored","Unscored"]]
+    .map(([v,l]) => `<button data-v="${v}" class="${v===filter?'on':''}">${l}</button>`).join("");
+  el.querySelectorAll("button").forEach(b => b.onclick = () => { filter = b.dataset.v; renderFilters(); renderCards(); });
+}
+function renderCards(){
+  const box = document.getElementById("cards");
+  box.innerHTML = TRENDS.filter(t => filter==="all" || t.v===filter).map(t => `
+    <article class="tc">
+      <span class="stamp c-${t.v}">${LABEL[t.v]}</span>
+      <div class="ic">${t.ic}</div>
+      <h3>${t.n}. ${esc(t.t)}</h3>
+      <div class="vs"><span class="k">SAID</span><span>${esc(t.p)}</span><span class="k">GOT</span><span>${esc(t.h)}</span></div>
+      <div class="bar"><i data-w="${t.pct}" style="background:${COLORS[t.v]}"></i></div>
+      ${t.s.length ? `<div class="src">${t.s.map(([l,u]) => `<a href="${u}">${esc(l)}</a>`).join("")}</div>` : ""}
+    </article>`).join("");
+  box.querySelectorAll(".tc").forEach(c => {
+    c.addEventListener("reveal", () => { const b = c.querySelector(".bar i"); b.style.width = b.dataset.w + "%"; });
+    watch(c);
+  });
+}
+renderFilters(); renderCards();
+
+/* ---------- flip cards ---------- */
+document.getElementById("flips").innerHTML = FLIPS.map(f => `
+  <button class="flip" aria-label="Flip card: ${esc(f.claim)}">
+    <div class="in3d">
+      <div class="face front"><div class="sym">${f.s}</div><div class="claim">"${esc(f.claim)}"</div><div class="hint">tap to reveal ↻</div></div>
+      <div class="face back"><div class="vd c-${f.c}">${esc(f.vd)}</div><div>${esc(f.back)}</div><div class="hint" style="margin-top:auto;color:var(--muted);font-size:12px">tap to flip back</div></div>
+    </div>
+  </button>`).join("");
+document.querySelectorAll(".flip").forEach(b => b.onclick = () => b.classList.toggle("flipped"));
+
+/* ---------- sharpshooter ---------- */
+(function(){
+  const holes = document.getElementById("holes"), tgts = document.getElementById("tgts");
+  const shots = [[120,90],[470,210],[300,150],[200,230],[520,80],[90,200],[330,120],[280,170],[400,100],[160,140]];
+  const cluster = [2,6,7]; // the hits the "decoder" chooses afterwards
+  let timers = [];
+  function play(){
+    timers.forEach(clearTimeout); timers = [];
+    holes.innerHTML = shots.map(([x,y]) => `<circle class="hole" cx="${x}" cy="${y}" r="9"/>`).join("");
+    const cx = 303, cy = 147;
+    tgts.innerHTML = [60,40,20].map((r,i) =>
+      `<circle class="tgt" cx="${cx}" cy="${cy}" r="${r}" stroke="${i%2?'#fff':'#e5534b'}"/>`).join("");
+    const cap1 = document.getElementById("cap1"), cap2 = document.getElementById("cap2");
+    [cap1,cap2].forEach(c => c.style.opacity = 0);
+    const T = (fn, ms) => timers.push(setTimeout(fn, reduce ? 0 : ms));
+    T(() => cap1.style.opacity = 1, 100);
+    holes.querySelectorAll(".hole").forEach((h,i) => T(() => { h.style.opacity = 1; }, 300 + i*220));
+    T(() => holes.querySelectorAll(".hole").forEach((h,i) => { if (!cluster.includes(i)) h.style.opacity = .25; }), 2700);
+    tgts.querySelectorAll(".tgt").forEach((c,i) => T(() => {
+      c.style.transition = reduce ? "none" : "stroke-dashoffset 1s ease"; c.style.strokeDashoffset = 0; }, 3100 + i*500));
+    T(() => cap2.style.opacity = 1, 4700);
+  }
+  const box = document.getElementById("barn");
+  box.addEventListener("reveal", play);
+  document.getElementById("replay").onclick = play;
+  watch(box);
+})();
+
+/* ---------- generic reveals ---------- */
+document.querySelectorAll(".rv").forEach(watch);
+</script>
+</body>
+</html>
