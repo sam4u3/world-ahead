@@ -102,20 +102,48 @@ h2{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(22px,5vw,30px);mar
 .ck .bx::after{content:"✓";transform:scale(0);transition:transform .35s cubic-bezier(.2,1.6,.4,1)}
 .base.in .ck .bx::after{transform:scale(1)}
 .plays{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-top:16px}
-.play{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;text-align:left;font:inherit;color:inherit;position:relative;overflow:hidden}
-.play .row1{display:flex;gap:12px;align-items:center}
+.play{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;position:relative;overflow:hidden}
+.play .row1{display:flex;gap:12px;align-items:center;padding-right:96px}
 .play .e{font-size:34px;line-height:1}
 .play h4{margin:0;font-size:16px}
 .play .trig{margin-top:10px;font-size:13px;background:#0b0d10;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
 .play .trig b{color:var(--partial)}
-.play .lvl{position:absolute;top:12px;right:12px;font-size:11px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:999px}
+.play .lvl{position:absolute;top:14px;right:12px;font-size:11px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:999px}
 .lvl.high{background:#3a1517;color:var(--miss)}.lvl.med{background:#3a2a10;color:var(--partial)}.lvl.low{background:#123524;color:var(--hit)}
-.play .moves{max-height:0;overflow:hidden;transition:max-height .5s ease}
-.play.open .moves{max-height:520px}
-.play ol{margin:12px 0 0;padding-left:20px;font-size:14px}
-.play ol li{margin-bottom:6px}
-.play .hint{margin-top:10px;font-size:12px;color:var(--accent);font-weight:700}
-.play .avoid{margin-top:8px;font-size:13px;color:var(--miss)}
+.ready{margin-top:12px}
+.ready .lab{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--muted)}
+.ready .tr{height:8px;background:#0b0d10;border-radius:8px;overflow:hidden;margin-top:4px}
+.ready .tr i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--partial),var(--hit));border-radius:8px;transition:width .6s ease}
+.toggle{margin-top:12px;width:100%;background:#1c2740;border:1px solid #2c3a5c;color:var(--text);border-radius:10px;padding:9px;font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.body{max-height:0;overflow:hidden;transition:max-height .6s ease}
+.play.open .body{max-height:1600px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:14px;background:#0b0d10;border-radius:12px;padding:4px}
+.tabs button{background:none;border:0;color:var(--muted);font:inherit;font-size:12px;font-weight:700;padding:8px 2px;border-radius:9px;cursor:pointer;line-height:1.2}
+.tabs button.on{background:var(--panel);color:var(--text);box-shadow:0 0 0 1px var(--line)}
+.tabs button .ph{display:block;font-size:16px}
+.pane{display:none;padding-top:12px;font-size:14px}
+.pane.on{display:block;animation:fadein .4s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pane .lead{color:var(--muted);font-size:13px;margin:0 0 8px}
+.prep label{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.prep input{width:18px;height:18px;margin-top:2px;accent-color:var(--hit);flex:none}
+.prep label.done span{color:var(--muted);text-decoration:line-through}
+.signs li{margin-bottom:6px}
+.stepper{position:relative;padding-left:26px}
+.stepper::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.stp{position:relative;margin-bottom:12px;opacity:0;transform:translateX(10px)}
+.pane.on .stp{animation:stepin .45s ease forwards}
+.pane.on .stp:nth-child(2){animation-delay:.15s}.pane.on .stp:nth-child(3){animation-delay:.3s}.pane.on .stp:nth-child(4){animation-delay:.45s}
+@keyframes stepin{to{opacity:1;transform:none}}
+.stp::before{content:"";position:absolute;left:-23px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--panel)}
+.stp.worst::before{background:var(--miss)}
+.stp .when{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.stp.worst .when{color:var(--miss)}
+.stp ul{margin:4px 0 0;padding-left:18px}
+.stp li{margin-bottom:4px}
+.avoid{margin-top:10px;font-size:13px;color:var(--miss);font-weight:600}
+.after{background:#123524;border:1px solid #1d5a3b;border-radius:10px;padding:10px 12px}
+.after b{color:var(--hit)}
 .mcheck{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .mc{background:#0b0d10;border:1px solid var(--line);border-radius:12px;padding:10px}
 .mc .n{font-size:24px}
@@ -184,7 +212,7 @@ footer{margin-top:60px;border-top:1px solid var(--line);padding-top:16px;color:v
 </div>
 
 <h2 class="rv" id="playbook">Action playbook: if this happens, do this</h2>
-<p class="sub rv">Decide now, act calmly later. Each card shows a trigger you can measure and the moves to make. Tap a card to see the moves. This is general information, not financial advice.</p>
+<p class="sub rv">Decide now, act calmly later. Every card has four phases: <b>Prepare</b> (do it now), <b>Signs</b> (early warnings), <b>It happened</b> (day 1, week 1, month 1, worst case) and <b>After</b> (when it is over). Tick off the prep steps to fill your readiness bar. General information, not financial advice.</p>
 
 <div class="panel rv base" id="base">
   <div class="baseh">🛟 Do these now, whatever happens</div>
@@ -336,30 +364,78 @@ const BASE = [
  "Turn on 2FA, a password manager, and bank/UPI transaction alerts"
 ];
 const PLAYS = [
- {e:"🛢️",t:"Oil & food prices spike",lvl:"high",trig:"Brent stays above <b>$110</b> for a month, or Indian fuel/food inflation jumps",
-  moves:["Raise your monthly budget for fuel and groceries by about 15%","Delay big optional purchases (car, gadgets) by 3–6 months","Lock fixed rates on any loan you can't avoid","Check your emergency fund still covers 6 months at the higher prices"],
-  avoid:"Don't hoard or buy fuel and food in bulk at peak prices."},
- {e:"📉",t:"Bond market 'snaps'",lvl:"high",trig:"US 10-year above <b>6%</b>, or a major default or bailout makes headlines",
-  moves:["Expect stock markets to fall, so keep your SIP running and don't stop it","Don't take new loans until rates settle","Move money you need within 12 months out of stocks","Rebalance once, on a fixed date, not daily"],
-  avoid:"Don't sell everything after a 10% fall. Panic-selling locks in the loss."},
- {e:"🤖",t:"AI crash hits IT hiring",lvl:"high",trig:"Nasdaq falls <b>20%</b> from its peak, or big IT firms announce hiring freezes or layoffs",
-  moves:["Grow your emergency fund toward 12 months","Update your CV and LinkedIn, and contact 5 people in your network","Become visibly useful in your current role: own a critical system","Finish one certification in AI, security or cloud"],
-  avoid:"Don't quit a stable job without an offer in hand during a freeze."},
- {e:"🛡️",t:"Wave of AI cyber-attacks",lvl:"med",trig:"A major bank, telecom or government breach is reported, or deepfake scams surge",
-  moves:["Change passwords on email and banking; use the password manager","Lower UPI and card limits, and freeze cards you don't use","Agree a 'safe word' with family for urgent money calls","Never act on calls or messages asking for OTPs, even if the voice sounds familiar"],
-  avoid:"Don't click links in 'urgent' bank or KYC messages."},
- {e:"🌏",t:"Taiwan blockade",lvl:"med",trig:"China declares a blockade or quarantine of Taiwan",
-  moves:["Buy any laptop or phone you genuinely need soon, before chip shortages raise prices","Expect a market drop: follow the 'bond snap' card","Watch for supply-chain and semiconductor job openings, since demand shifts"],
-  avoid:"Don't stockpile electronics you don't need."},
- {e:"🌡️",t:"Extreme heat / weak monsoon",lvl:"med",trig:"IMD declares a monsoon below <b>90%</b> of normal, or heatwave alerts in your city",
-  moves:["Budget for higher vegetable, grain and power bills","Check your cooling and power backup before summer","Review heat-related cover in your health insurance","Plan travel to avoid peak heat months"],
-  avoid:"Don't ignore heat health risks: hydrate, and avoid midday outdoor work."},
- {e:"🇺🇸",t:"US tariffs or visa curbs on IT",lvl:"med",trig:"New US limits on outsourcing, H-1B visas, or tariffs hitting Indian services",
-  moves:["Diversify your skills toward clients in Europe, the Middle East and India","Ask your employer which accounts are exposed","Keep the job-switch plan ready, but move only with an offer"],
-  avoid:"Don't assume your current US client is safe."},
- {e:"🇫🇷",t:"Le Pen wins France",lvl:"low",trig:"National Rally wins the presidential run-off",
-  moves:["Expect some euro and market wobbles, with little direct effect in India","If you work on EU client projects, ask about budget plans"],
-  avoid:"Don't make investment moves based on the headline alone."}
+ {id:"oil",e:"🛢️",t:"Oil & food prices spike",lvl:"high",trig:"Brent stays above <b>$110</b> for a month, or Indian fuel/food inflation jumps",
+  prep:["Note your current monthly fuel and grocery spend as a baseline","Make sure your emergency fund covers 6 months at prices 15% higher","Move any floating-rate loan to a fixed rate, if your lender allows","Keep a normal 2–4 week pantry (not hoarding)"],
+  signs:["Brent above $100 for several weeks","Shipping disruption in the Gulf or Strait of Hormuz","Urea or fertiliser prices jumping","RBI or the government warning about inflation"],
+  day1:["Don't panic-buy fuel or food","Check this month's budget against your baseline"],
+  week1:["Raise the fuel and grocery budget by about 15%","Pause big optional purchases (car, gadgets, renovations)"],
+  month1:["Cut or pause subscriptions you don't use","Recheck that the emergency fund still covers 6 months"],
+  worst:["If prices rise for 3+ months, rebuild the budget from scratch around essentials","Use public transport or carpools to cut fuel spending"],
+  avoid:"Don't hoard or bulk-buy at peak prices.",
+  after:"<b>All clear when</b> Brent is back under $90 for a month. Restore your normal budget and resume postponed purchases."},
+ {id:"bond",e:"📉",t:"Bond market 'snaps'",lvl:"high",trig:"US 10-year above <b>6%</b>, or a major default or bailout makes headlines",
+  prep:["Write down your target split (equity / debt / cash) in one line","Keep money you need within 12 months out of stocks","Set SIPs to auto-debit so you don't have to decide during a crash","Avoid taking new floating-rate loans"],
+  signs:["US 10-year above 5.5% and rising","Weak government bond auctions in the US, UK or Europe","A country or big company asking for a bailout","Headlines about 'credit spreads widening'"],
+  day1:["Make no portfolio changes","Stop checking prices every hour"],
+  week1:["Confirm your SIPs are still running","Confirm your emergency fund is untouched","Postpone any new loan"],
+  month1:["Rebalance once, on a fixed date, back to your written split"],
+  worst:["If you lose income too, pause SIPs before selling investments","Use the emergency fund for expenses rather than selling in a crash"],
+  avoid:"Don't sell everything after a 10% fall. Panic-selling locks in the loss.",
+  after:"<b>All clear when</b> yields fall back or the central bank steps in. Consider refinancing loans once rates drop."},
+ {id:"ai",e:"🤖",t:"AI crash hits IT hiring",lvl:"high",trig:"Nasdaq falls <b>20%</b> from its peak, or big IT firms announce hiring freezes or layoffs",
+  prep:["Update your CV and LinkedIn with numbers (systems owned, money or time saved)","Start one certification in AI, security or cloud","List 20 people you could call about a job","Know your notice period, PF balance, gratuity and leave encashment","Push your emergency fund toward 12 months"],
+  signs:["Nasdaq down 10%+ from its peak","AI companies in debt trouble","Clients cutting IT budgets or delaying projects","Your project pipeline thinning; hiring-freeze rumours"],
+  day1:["Stay calm, and don't resign","Save copies of your appraisals and achievements"],
+  week1:["Ask your manager about the project roadmap","Message 5 contacts from your list","Apply selectively to stable companies"],
+  month1:["Finish the certification","Cut non-essential spending by 10–20%","Put the savings into the emergency fund"],
+  worst:["If laid off: get the full settlement in writing (salary, PF, gratuity, leave encashment)","Arrange health cover straight away if company insurance ends","Apply widely, including contract and remote roles"],
+  avoid:"Don't quit a stable job without an offer in hand during a freeze.",
+  after:"<b>All clear when</b> hiring announcements return. Use your new skill to negotiate a better package."},
+ {id:"cyber",e:"🛡️",t:"Wave of AI cyber-attacks",lvl:"med",trig:"A major bank, telecom or government breach is reported, or deepfake scams surge",
+  prep:["Set up a password manager with unique passwords","Use an authenticator app for 2FA rather than SMS where possible","Turn on bank and UPI transaction alerts","Agree a family 'safe word' for urgent money calls","Freeze cards you don't use"],
+  signs:["A breach at a bank, telecom or app you use","A spike in news about deepfake calls or scams","Unexpected OTPs or login alerts"],
+  day1:["Change the password for the affected service and your email","Check your recent bank transactions"],
+  week1:["Check your credit report (CIBIL) for unknown loans","Lower UPI and card limits"],
+  month1:["Remove old apps linked to your bank or email","Turn on login notifications everywhere"],
+  worst:["If money is stolen: call 1930 (India's cybercrime helpline) immediately and report at cybercrime.gov.in","Call your bank to block the account or card"],
+  avoid:"Never share an OTP, even with a 'bank officer' or a familiar voice.",
+  after:"<b>All clear</b> doesn't really happen here. Keep these habits permanently."},
+ {id:"taiwan",e:"🌏",t:"Taiwan blockade",lvl:"med",trig:"China declares a blockade or quarantine of Taiwan",
+  prep:["Replace an ageing laptop or phone on your normal schedule; don't wait","Keep your emergency fund and SIPs in place"],
+  signs:["Bigger-than-usual PLA drills around Taiwan","US–China crisis talks","Shipping insurers pulling out of the Taiwan Strait"],
+  day1:["Don't panic-sell; expect markets to drop"],
+  week1:["Buy only electronics you genuinely need","Follow the 'bond snap' steps for investments"],
+  month1:["Budget for higher electronics prices","Watch for semiconductor and supply-chain job openings"],
+  worst:["If shortages last months, repair rather than replace devices"],
+  avoid:"Don't stockpile electronics you don't need.",
+  after:"<b>All clear when</b> shipping resumes. Prices normalise over a few months."},
+ {id:"heat",e:"🌡️",t:"Extreme heat / weak monsoon",lvl:"med",trig:"IMD forecasts a monsoon below <b>90%</b> of normal, or heatwave alerts in your city",
+  prep:["Service the AC or cooler before March","Check your inverter or power backup","Confirm health insurance covers hospitalisation","Arrange water storage if your area faces shortages"],
+  signs:["IMD's April monsoon forecast below normal","El Niño officially declared","Heatwave alerts for your city"],
+  day1:["Stay indoors from 12 to 4 pm, and drink water often","Check on elderly family members"],
+  week1:["Work from home on extreme days if you can","Adjust the budget for vegetables and power bills"],
+  month1:["Review how food prices are hitting the budget","Move travel plans away from peak heat"],
+  worst:["Heatstroke signs (confusion, very high temperature, no sweating) need medical help immediately"],
+  avoid:"Don't ignore heat exhaustion. Rest and cool down early.",
+  after:"<b>All clear when</b> the monsoon arrives normally. Revert the budget."},
+ {id:"us",e:"🇺🇸",t:"US tariffs or visa curbs on IT",lvl:"med",trig:"New US limits on outsourcing, H-1B visas, or tariffs hitting Indian services",
+  prep:["Know which client and country your project bills to","Build skills that carry across clients and industries","Grow your network outside your current account"],
+  signs:["US bills proposing outsourcing taxes or visa fee hikes","Clients announcing insourcing","Your company pausing onsite travel"],
+  day1:["Ask your manager how exposed your account is"],
+  week1:["Update your CV","Start upskilling toward non-US clients or product companies"],
+  month1:["Apply to roles with clients in Europe, the Middle East or India"],
+  worst:["If your account is cut, push for an internal move before taking the bench"],
+  avoid:"Don't assume your current US client is safe.",
+  after:"<b>All clear when</b> the rules settle. Reassess whether to stay on US accounts."},
+ {id:"fr",e:"🇫🇷",t:"Le Pen wins France",lvl:"low",trig:"National Rally wins the presidential run-off",
+  prep:["Nothing special. The 'Do these now' list already covers you"],
+  signs:["Opinion polls before the spring election"],
+  day1:["Ignore the market noise"],
+  week1:["If you work on EU client projects, ask about budget plans"],
+  month1:["No action unless your EU project is affected"],
+  worst:["If an EU project is cut, follow the 'US curbs' card for switching accounts"],
+  avoid:"Don't make investment moves based on the headline alone.",
+  after:"<b>All clear</b> once markets settle after a few weeks."}
 ];
 const MONTHLY = [
  {n:"🛢️",b:"Brent oil",s:"trigger: above $110"},
@@ -369,26 +445,65 @@ const MONTHLY = [
  {n:"🌧️",b:"Monsoon (Jun–Sep)",s:"trigger: below 90%"},
  {n:"💼",b:"IT hiring news",s:"trigger: freezes or layoffs"}
 ];
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem("wa-prep-"+k) || "[]"); } catch(e){ return []; } },
+  set(k,v){ try { localStorage.setItem("wa-prep-"+k, JSON.stringify(v)); } catch(e){} }
+};
 (function(){
   const base = document.getElementById("base");
   document.getElementById("checks").innerHTML = BASE.map((b,i) =>
-    `<div class="ck" style="transition-delay:${i*120}ms"><span class="bx" style="transition-delay:${i*120}ms"></span><span>${esc(b)}</span></div>`).join("");
-  base.querySelectorAll(".ck .bx").forEach((x,i)=> x.style.setProperty("--d", i));
+    `<div class="ck" style="transition-delay:${i*120}ms"><span class="bx"></span><span>${esc(b)}</span></div>`).join("");
   watch(base);
+
+  const list = a => `<ul>${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
   const box = document.getElementById("plays");
-  box.innerHTML = PLAYS.map(p => `
-    <button class="play rv" aria-expanded="false">
+  box.innerHTML = PLAYS.map(p => {
+    const done = store.get(p.id);
+    return `
+    <article class="play rv" data-id="${p.id}">
       <span class="lvl ${p.lvl}">${p.lvl==="high"?"HIGH IMPACT":p.lvl==="med"?"MEDIUM":"LOW"}</span>
       <div class="row1"><span class="e">${p.e}</span><h4>${esc(p.t)}</h4></div>
       <div class="trig">🚨 Trigger: ${p.trig}</div>
-      <div class="moves"><ol>${p.moves.map(m=>`<li>${esc(m)}</li>`).join("")}</ol><div class="avoid">✋ ${esc(p.avoid)}</div></div>
-      <div class="hint">Tap for your moves ↓</div>
-    </button>`).join("");
-  box.querySelectorAll(".play").forEach(b => {
-    b.onclick = () => { const o = b.classList.toggle("open"); b.setAttribute("aria-expanded", o);
-      b.querySelector(".hint").textContent = o ? "Tap to close ↑" : "Tap for your moves ↓"; };
-    watch(b);
+      <div class="ready"><div class="lab"><span>Your readiness</span><span class="pct">0%</span></div><div class="tr"><i></i></div></div>
+      <button class="toggle" aria-expanded="false">Open plan ↓</button>
+      <div class="body">
+        <div class="tabs" role="tablist">
+          <button class="on" data-t="0"><span class="ph">🧰</span>Prepare</button>
+          <button data-t="1"><span class="ph">👀</span>Signs</button>
+          <button data-t="2"><span class="ph">🚨</span>It happened</button>
+          <button data-t="3"><span class="ph">🌤️</span>After</button>
+        </div>
+        <div class="pane on prep"><p class="lead">Do these before anything happens. Tick them off; this phone remembers.</p>
+          ${p.prep.map((x,i)=>`<label class="${done.includes(i)?'done':''}"><input type="checkbox" data-i="${i}" ${done.includes(i)?'checked':''}><span>${esc(x)}</span></label>`).join("")}
+        </div>
+        <div class="pane signs"><p class="lead">Early warnings that it's getting closer:</p>${list(p.signs)}</div>
+        <div class="pane"><div class="stepper">
+          <div class="stp"><div class="when">Day 1</div>${list(p.day1)}</div>
+          <div class="stp"><div class="when">Week 1</div>${list(p.week1)}</div>
+          <div class="stp"><div class="when">Month 1</div>${list(p.month1)}</div>
+          <div class="stp worst"><div class="when">If it gets worse</div>${list(p.worst)}</div>
+        </div><div class="avoid">✋ ${esc(p.avoid)}</div></div>
+        <div class="pane"><div class="after">${p.after}</div></div>
+      </div>
+    </article>`;}).join("");
+
+  box.querySelectorAll(".play").forEach(card => {
+    const id = card.dataset.id, total = card.querySelectorAll(".prep input").length;
+    const bar = card.querySelector(".ready .tr i"), pct = card.querySelector(".pct");
+    const paint = () => { const n = card.querySelectorAll(".prep input:checked").length, v = Math.round(n/total*100);
+      bar.style.width = v + "%"; pct.textContent = v + "%" + (v===100 ? " ✓" : ""); };
+    card.querySelectorAll(".prep input").forEach(inp => inp.onchange = () => {
+      inp.closest("label").classList.toggle("done", inp.checked);
+      store.set(id, [...card.querySelectorAll(".prep input:checked")].map(x => +x.dataset.i)); paint(); });
+    const tg = card.querySelector(".toggle");
+    tg.onclick = () => { const o = card.classList.toggle("open"); tg.setAttribute("aria-expanded", o); tg.textContent = o ? "Close plan ↑" : "Open plan ↓"; };
+    const tabs = card.querySelectorAll(".tabs button"), panes = card.querySelectorAll(".pane");
+    tabs.forEach(b => b.onclick = () => { tabs.forEach(x=>x.classList.remove("on")); panes.forEach(x=>x.classList.remove("on"));
+      b.classList.add("on"); panes[+b.dataset.t].classList.add("on"); });
+    card.addEventListener("reveal", paint);
+    watch(card);
   });
+
   document.getElementById("mcheck").innerHTML = MONTHLY.map(m =>
     `<div class="mc"><div class="n">${m.n}</div><b>${esc(m.b)}</b><span>${esc(m.s)}</span></div>`).join("");
 })();
